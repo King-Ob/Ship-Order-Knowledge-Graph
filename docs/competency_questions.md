@@ -1,4 +1,4 @@
-#ship Competncy Question
+# ship Competency Question
 # purpose: These question define the functional requirements for our build.
 
 #  Structural/Classification Questions.
