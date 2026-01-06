@@ -1,0 +1,153 @@
+{
+  "source": "Navy Vessel Register (NVR)",
+  "authority": "Naval Sea Systems Command (NAVSEA)",
+  "url": "https://www.navsea.navy.mil",
+  "extraction_date": "2024-01-15T10:30:00Z",
+  "description": "Authoritative US Navy vessel inventory and lifecycle data",
+  "vessels": [
+    {
+      "hull_symbol": "CVN-68",
+      "name": "USS Nimitz",
+      "ship_type": "Aircraft Carrier",
+      "class": "Nimitz",
+      "status": "Active",
+      "commission_date": "1975-05-03",
+      "decommission_date": null,
+      "homeport": "Naval Base Kitsap, Bremerton, WA",
+      "fleet_assignment": "U.S. Pacific Fleet",
+      "propulsion_type": "Nuclear",
+      "operator": "United States Navy"
+    },
+    {
+      "hull_symbol": "CVN-71",
+      "name": "USS Theodore Roosevelt",
+      "ship_type": "Aircraft Carrier",
+      "class": "Nimitz",
+      "status": "Active",
+      "commission_date": "1986-10-25",
+      "decommission_date": null,
+      "homeport": "Naval Base San Diego, CA",
+      "fleet_assignment": "U.S. Pacific Fleet",
+      "propulsion_type": "Nuclear",
+      "operator": "United States Navy"
+    },
+    {
+      "hull_symbol": "DDG-51",
+      "name": "USS Arleigh Burke",
+      "ship_type": "Guided Missile Destroyer",
+      "class": "Arleigh Burke",
+      "status": "Active",
+      "commission_date": "1991-07-04",
+      "decommission_date": null,
+      "homeport": "Naval Station Norfolk, VA",
+      "fleet_assignment": "U.S. Atlantic Fleet",
+      "propulsion_type": "Gas Turbine",
+      "operator": "United States Navy"
+    },
+    {
+      "hull_symbol": "DDG-52",
+      "name": "USS Barry",
+      "ship_type": "Guided Missile Destroyer",
+      "class": "Arleigh Burke",
+      "status": "Active",
+      "commission_date": "1992-12-12",
+      "decommission_date": null,
+      "homeport": "Naval Station Norfolk, VA",
+      "fleet_assignment": "U.S. Atlantic Fleet",
+      "propulsion_type": "Gas Turbine",
+      "operator": "United States Navy"
+    },
+    {
+      "hull_symbol": "LHA-6",
+      "name": "USS America",
+      "ship_type": "Amphibious Assault Ship",
+      "class": "America",
+      "status": "Active",
+      "commission_date": "2014-10-11",
+      "decommission_date": null,
+      "homeport": "Naval Base San Diego, CA",
+      "fleet_assignment": "U.S. Pacific Fleet",
+      "propulsion_type": "Gas Turbine",
+      "operator": "United States Navy"
+    },
+    {
+      "hull_symbol": "CG-47",
+      "name": "USS Ticonderoga",
+      "ship_type": "Guided Missile Cruiser",
+      "class": "Ticonderoga",
+      "status": "Decommissioned",
+      "commission_date": "1983-01-22",
+      "decommission_date": "2004-09-30",
+      "homeport": null,
+      "fleet_assignment": null,
+      "propulsion_type": "Gas Turbine",
+      "operator": "United States Navy"
+    },
+    {
+      "hull_symbol": "DD-963",
+      "name": "USS Spruance",
+      "ship_type": "Destroyer",
+      "class": "Spruance",
+      "status": "Decommissioned",
+      "commission_date": "1975-09-20",
+      "decommission_date": "2005-03-23",
+      "homeport": null,
+      "fleet_assignment": null,
+      "propulsion_type": "Gas Turbine",
+      "operator": "United States Navy",
+      "reclassification_events": [
+        {
+          "date": "1998-06-01",
+          "from": "Destroyer",
+          "to": "Guided Missile Destroyer"
+        }
+      ]
+    },
+    {
+      "hull_symbol": "CV-41",
+      "name": "USS Midway",
+      "ship_type": "Aircraft Carrier",
+      "class": "Midway",
+      "status": "Museum",
+      "commission_date": "1945-09-10",
+      "decommission_date": "1992-04-11",
+      "homeport": "San Diego, CA (Museum)",
+      "fleet_assignment": null,
+      "propulsion_type": "Conventional",
+      "operator": "United States Navy"
+    },
+    {
+      "hull_symbol": "BB-61",
+      "name": "USS Iowa",
+      "ship_type": "Battleship",
+      "class": "Iowa",
+      "status": "Museum",
+      "commission_date": "1943-02-22",
+      "decommission_date": "1990-10-26",
+      "homeport": "Los Angeles, CA (Museum)",
+      "fleet_assignment": null,
+      "propulsion_type": "Conventional",
+      "operator": "United States Navy"
+    },
+    {
+      "hull_symbol": "SSN-688",
+      "name": "USS Los Angeles",
+      "ship_type": "Attack Submarine",
+      "class": "Los Angeles",
+      "status": "Decommissioned",
+      "commission_date": "1976-11-13",
+      "decommission_date": "2010-01-23",
+      "homeport": null,
+      "fleet_assignment": null,
+      "propulsion_type": "Nuclear",
+      "operator": "United States Navy"
+    }
+  ],
+  "metadata": {
+    "total_vessels": 10,
+    "active_count": 5,
+    "decommissioned_count": 3,
+    "museum_count": 2,
+    "data_quality": "Authoritative - Official NAVSEA records"
+  }
+}

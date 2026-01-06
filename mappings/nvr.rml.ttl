@@ -1,0 +1,404 @@
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix ship: <https://example.org/ship-ontology/> .
+@prefix ship-entity: <https://example.org/ship-ontology/entity/> .
+
+# RML Mapping for Navy Vessel Register (NVR) JSON Export
+# Maps NVR JSON data to RDF using the naval core ontology
+# Source: data/raw/nvr_export.json
+# Version: 1.0
+# Created: 2024-01-15
+
+# ============================================================================
+# LOGICAL SOURCE
+# ============================================================================
+
+<#NVRSource> a rml:LogicalSource ;
+    rml:source "data/raw/nvr_export.json" ;
+    rml:referenceFormulation ql:JSONPath ;
+    rml:iterator "$.vessels[*]" .
+
+# ============================================================================
+# PROVENANCE METADATA
+# ============================================================================
+
+<#NVRProvenance> a prov:Entity ;
+    prov:wasAttributedTo <https://www.navsea.navy.mil> ;
+    dct:source <https://www.navsea.navy.mil> ;
+    dct:title "Navy Vessel Register (NVR)" ;
+    dct:description "Authoritative US Navy vessel inventory and lifecycle data" ;
+    prov:generatedAtTime "2024-01-15T10:30:00Z"^^xsd:dateTime .
+
+# ============================================================================
+# SHIP MAPPING
+# ============================================================================
+
+<#ShipMapping> a rr:TriplesMap ;
+    rml:logicalSource <#NVRSource> ;
+    
+    # Subject: Ship URI based on hull symbol
+    rr:subjectMap [
+        rr:template "https://example.org/ship-ontology/entity/ship/{hull_symbol}" ;
+        rr:class ship:Ship ;
+    ] ;
+    
+    # Ship Name
+    rr:predicateObjectMap [
+        rr:predicate ship:shipName ;
+        rr:objectMap [
+            rml:reference "name" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+        ] ;
+    ] ;
+    
+    # Hull Symbol
+    rr:predicateObjectMap [
+        rr:predicate ship:hullSymbol ;
+        rr:objectMap [
+            rml:reference "hull_symbol" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+        ] ;
+    ] ;
+    
+    # Status
+    rr:predicateObjectMap [
+        rr:predicate ship:status ;
+        rr:objectMap [
+            rml:reference "status" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+        ] ;
+    ] ;
+    
+    # Commission Date
+    rr:predicateObjectMap [
+        rr:predicate ship:commissionDate ;
+        rr:objectMap [
+            rml:reference "commission_date" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:date ;
+            rml:condition [
+                rml:reference "commission_date" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Decommission Date (optional)
+    rr:predicateObjectMap [
+        rr:predicate ship:decommissionDate ;
+        rr:objectMap [
+            rml:reference "decommission_date" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:date ;
+            rml:condition [
+                rml:reference "decommission_date" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Propulsion Type
+    rr:predicateObjectMap [
+        rr:predicate ship:propulsionType ;
+        rr:objectMap [
+            rml:reference "propulsion_type" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+        ] ;
+    ] ;
+    
+    # Ship Type
+    rr:predicateObjectMap [
+        rr:predicate ship:shipType ;
+        rr:objectMap [
+            rml:reference "ship_type" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+        ] ;
+    ] ;
+    
+    # Link to Ship Class
+    rr:predicateObjectMap [
+        rr:predicate ship:hasClass ;
+        rr:objectMap [
+            rr:template "https://example.org/ship-ontology/entity/class/{class}" ;
+            rr:termType rr:IRI ;
+            rml:reference "class" ;
+            rml:transformation [
+                rml:function <#normalizeClassName> ;
+                rml:parameter [
+                    rml:reference "class" ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Link to Operator
+    rr:predicateObjectMap [
+        rr:predicate ship:operatedBy ;
+        rr:objectMap [
+            rr:template "https://example.org/ship-ontology/entity/operator/{operator}" ;
+            rr:termType rr:IRI ;
+            rml:reference "operator" ;
+            rml:transformation [
+                rml:function <#normalizeOperator> ;
+                rml:parameter [
+                    rml:reference "operator" ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Link to Homeport (optional)
+    rr:predicateObjectMap [
+        rr:predicate ship:homeportedAt ;
+        rr:objectMap [
+            rr:template "https://example.org/ship-ontology/entity/homeport/{homeport}" ;
+            rr:termType rr:IRI ;
+            rml:reference "homeport" ;
+            rml:transformation [
+                rml:function <#normalizeHomeport> ;
+                rml:parameter [
+                    rml:reference "homeport" ;
+                ] ;
+            ] ;
+            rml:condition [
+                rml:reference "homeport" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Provenance: Source
+    rr:predicateObjectMap [
+        rr:predicate dct:source ;
+        rr:objectMap [
+            rr:constant <https://www.navsea.navy.mil> ;
+            rr:termType rr:IRI ;
+        ] ;
+    ] ;
+    
+    # Provenance: Extraction Date
+    rr:predicateObjectMap [
+        rr:predicate prov:generatedAtTime ;
+        rr:objectMap [
+            rr:constant "2024-01-15T10:30:00Z"^^xsd:dateTime ;
+            rr:termType rr:Literal ;
+        ] ;
+    ] .
+
+# ============================================================================
+# SHIP CLASS MAPPING
+# ============================================================================
+
+<#ShipClassMapping> a rr:TriplesMap ;
+    rml:logicalSource <#NVRSource> ;
+    
+    # Subject: Ship Class URI
+    rr:subjectMap [
+        rr:template "https://example.org/ship-ontology/entity/class/{class}" ;
+        rr:class ship:ShipClass ;
+        rml:transformation [
+            rml:function <#normalizeClassName> ;
+            rml:parameter [
+                rml:reference "class" ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Class Name
+    rr:predicateObjectMap [
+        rr:predicate ship:className ;
+        rr:objectMap [
+            rml:reference "class" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+        ] ;
+    ] ;
+    
+    # Provenance
+    rr:predicateObjectMap [
+        rr:predicate dct:source ;
+        rr:objectMap [
+            rr:constant <https://www.navsea.navy.mil> ;
+            rr:termType rr:IRI ;
+        ] ;
+    ] .
+
+# ============================================================================
+# OPERATOR MAPPING
+# ============================================================================
+
+<#OperatorMapping> a rr:TriplesMap ;
+    rml:logicalSource <#NVRSource> ;
+    
+    # Subject: Operator URI
+    rr:subjectMap [
+        rr:template "https://example.org/ship-ontology/entity/operator/{operator}" ;
+        rr:class ship:Operator ;
+        rml:transformation [
+            rml:function <#normalizeOperator> ;
+            rml:parameter [
+                rml:reference "operator" ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Operator Name
+    rr:predicateObjectMap [
+        rr:predicate ship:operatorName ;
+        rr:objectMap [
+            rml:reference "operator" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+        ] ;
+    ] ;
+    
+    # Provenance
+    rr:predicateObjectMap [
+        rr:predicate dct:source ;
+        rr:objectMap [
+            rr:constant <https://www.navsea.navy.mil> ;
+            rr:termType rr:IRI ;
+        ] ;
+    ] .
+
+# ============================================================================
+# HOMEPORT MAPPING
+# ============================================================================
+
+<#HomeportMapping> a rr:TriplesMap ;
+    rml:logicalSource <#NVRSource> ;
+    
+    # Subject: Homeport URI
+    rr:subjectMap [
+        rr:template "https://example.org/ship-ontology/entity/homeport/{homeport}" ;
+        rr:class ship:Homeport ;
+        rml:transformation [
+            rml:function <#normalizeHomeport> ;
+            rml:parameter [
+                rml:reference "homeport" ;
+            ] ;
+        ] ;
+        rml:condition [
+            rml:reference "homeport" ;
+            rml:logicalTarget [
+                rml:referenceFormulation ql:JSONPath ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Homeport Name
+    rr:predicateObjectMap [
+        rr:predicate ship:homeportName ;
+        rr:objectMap [
+            rml:reference "homeport" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+        ] ;
+    ] ;
+    
+    # Provenance
+    rr:predicateObjectMap [
+        rr:predicate dct:source ;
+        rr:objectMap [
+            rr:constant <https://www.navsea.navy.mil> ;
+            rr:termType rr:IRI ;
+        ] ;
+    ] .
+
+# ============================================================================
+# RECLASSIFICATION EVENTS MAPPING
+# ============================================================================
+
+<#ReclassificationEventMapping> a rr:TriplesMap ;
+    rml:logicalSource <#NVRSource> ;
+    
+    # Subject: Reclassification Event URI
+    rr:subjectMap [
+        rr:template "https://example.org/ship-ontology/entity/event/{hull_symbol}-reclass-{reclass_date}" ;
+        rr:class ship:Reclassified ;
+        rml:reference "reclassification_events[*]" ;
+    ] ;
+    
+    # Link to Ship
+    rr:predicateObjectMap [
+        rr:predicate ship:hasEvent ;
+        rr:objectMap [
+            rr:parentTriplesMap <#ShipMapping> ;
+            rr:joinCondition [
+                rr:child "hull_symbol" ;
+                rr:parent "hull_symbol" ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Event Date
+    rr:predicateObjectMap [
+        rr:predicate ship:eventDate ;
+        rr:objectMap [
+            rml:reference "$.reclassification_events[*].date" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:date ;
+        ] ;
+    ] ;
+    
+    # Old Classification
+    rr:predicateObjectMap [
+        rr:predicate ship:oldClassification ;
+        rr:objectMap [
+            rml:reference "$.reclassification_events[*].from" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+        ] ;
+    ] ;
+    
+    # New Classification
+    rr:predicateObjectMap [
+        rr:predicate ship:newClassification ;
+        rr:objectMap [
+            rml:reference "$.reclassification_events[*].to" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+        ] ;
+    ] ;
+    
+    # Provenance
+    rr:predicateObjectMap [
+        rr:predicate dct:source ;
+        rr:objectMap [
+            rr:constant <https://www.navsea.navy.mil> ;
+            rr:termType rr:IRI ;
+        ] ;
+    ] .
+
+# ============================================================================
+# NORMALIZATION FUNCTIONS (Placeholder - implement in RML processor)
+# ============================================================================
+
+# Note: These functions should be implemented in the RML processor
+# or as preprocessing steps before mapping
+
+<#normalizeClassName> a rml:Function ;
+    rdfs:comment "Normalizes class name for URI (lowercase, hyphenate)" .
+
+<#normalizeOperator> a rml:Function ;
+    rdfs:comment "Normalizes operator name to operator code (e.g., 'United States Navy' -> 'USN')" .
+
+<#normalizeHomeport> a rml:Function ;
+    rdfs:comment "Normalizes homeport name to URI-safe format (e.g., 'Naval Base San Diego, CA' -> 'san-diego-ca-us')" .

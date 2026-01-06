@@ -1,0 +1,224 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix time: <http://www.w3.org/2006/time#> .
+@prefix ship: <https://example.org/ship-ontology/> .
+@prefix ship-entity: <https://example.org/ship-ontology/entity/> .
+
+# Naval Events Ontology
+# OWL 2 ontology for modeling temporal events in ship lifecycles
+# Version: 1.0
+# Created: 2024-01-15
+
+ship:events a owl:Ontology ;
+    owl:versionInfo "1.0" ;
+    owl:imports <naval_core.owl.ttl> ;
+    rdfs:comment "Events module for naval vessel knowledge graph. Models lifecycle events, refits, deployments, renamings, and reclassifications."@en ;
+    dct:title "Naval Vessel Events Ontology"@en ;
+    dct:description "OWL 2 ontology defining event classes and properties for temporal ship lifecycle tracking."@en ;
+    dct:created "2024-01-15"^^xsd:date ;
+    dct:modified "2024-01-15"^^xsd:date .
+
+# ============================================================================
+# EVENT CLASSES
+# ============================================================================
+
+# Base Event Class
+ship:ShipEvent a owl:Class ;
+    rdfs:label "Ship Event"@en ;
+    rdfs:comment "Abstract base class for all events related to naval vessels. All ship lifecycle events inherit from this class."@en ;
+    rdfs:subClassOf owl:Thing .
+
+# Lifecycle Events
+ship:LaidDown a owl:Class ;
+    rdfs:label "Laid Down"@en ;
+    rdfs:comment "Event representing when a ship's keel was laid (construction began)."@en ;
+    rdfs:subClassOf ship:ShipEvent .
+
+ship:Launched a owl:Class ;
+    rdfs:label "Launched"@en ;
+    rdfs:comment "Event representing when a ship was launched (entered the water for the first time)."@en ;
+    rdfs:subClassOf ship:ShipEvent .
+
+ship:Commissioned a owl:Class ;
+    rdfs:label "Commissioned"@en ;
+    rdfs:comment "Event representing when a ship was officially commissioned into active service."@en ;
+    rdfs:subClassOf ship:ShipEvent .
+
+ship:Decommissioned a owl:Class ;
+    rdfs:label "Decommissioned"@en ;
+    rdfs:comment "Event representing when a ship was officially decommissioned from active service."@en ;
+    rdfs:subClassOf ship:ShipEvent .
+
+# Operational Events
+ship:Refit a owl:Class ;
+    rdfs:label "Refit"@en ;
+    rdfs:comment "Event representing a major refit, overhaul, or modernization of a ship. Refits may have start and end dates."@en ;
+    rdfs:subClassOf ship:ShipEvent .
+
+ship:Deployment a owl:Class ;
+    rdfs:label "Deployment"@en ;
+    rdfs:comment "Event representing a deployment or operational assignment of a ship. Deployments have start and end dates."@en ;
+    rdfs:subClassOf ship:ShipEvent .
+
+# Administrative Events
+ship:Renamed a owl:Class ;
+    rdfs:label "Renamed"@en ;
+    rdfs:comment "Event representing when a ship's name was changed. Includes both old and new names."@en ;
+    rdfs:subClassOf ship:ShipEvent .
+
+ship:Reclassified a owl:Class ;
+    rdfs:label "Reclassified"@en ;
+    rdfs:comment "Event representing when a ship's classification or type was changed. Includes both old and new classifications."@en ;
+    rdfs:subClassOf ship:ShipEvent .
+
+ship:OperatorChanged a owl:Class ;
+    rdfs:label "Operator Changed"@en ;
+    rdfs:comment "Event representing when a ship's operator (navy/organization) was changed, such as transfer to another navy."@en ;
+    rdfs:subClassOf ship:ShipEvent .
+
+# ============================================================================
+# OBJECT PROPERTIES
+# ============================================================================
+
+# hasEvent: Ship -> ShipEvent
+ship:hasEvent a owl:ObjectProperty ;
+    rdfs:label "has event"@en ;
+    rdfs:comment "Relates a ship to an event in its lifecycle."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range ship:ShipEvent .
+
+# eventLocation: ShipEvent -> Location (string for now, can be extended to Location class)
+ship:eventLocation a owl:DatatypeProperty ;
+    rdfs:label "event location"@en ;
+    rdfs:comment "The location where the event occurred (e.g., shipyard name, port, base)."@en ;
+    rdfs:domain ship:ShipEvent ;
+    rdfs:range xsd:string .
+
+# eventOrganization: ShipEvent -> Organization (string for now, can be extended)
+ship:eventOrganization a owl:DatatypeProperty ;
+    rdfs:label "event organization"@en ;
+    rdfs:comment "The organization responsible for or involved in the event (e.g., shipyard, navy command, contractor)."@en ;
+    rdfs:domain ship:ShipEvent ;
+    rdfs:range xsd:string .
+
+# ============================================================================
+# DATA PROPERTIES - TEMPORAL
+# ============================================================================
+
+# eventDate: Single date for point-in-time events
+ship:eventDate a owl:DatatypeProperty ;
+    rdfs:label "event date"@en ;
+    rdfs:comment "The date on which a point-in-time event occurred (e.g., launch, commission, decommission)."@en ;
+    rdfs:domain ship:ShipEvent ;
+    rdfs:range xsd:date .
+
+# eventStartDate: Start date for duration events
+ship:eventStartDate a owl:DatatypeProperty ;
+    rdfs:label "event start date"@en ;
+    rdfs:comment "The start date of an event with duration (e.g., refit start, deployment start)."@en ;
+    rdfs:domain ship:ShipEvent ;
+    rdfs:range xsd:date .
+
+# eventEndDate: End date for duration events
+ship:eventEndDate a owl:DatatypeProperty ;
+    rdfs:label "event end date"@en ;
+    rdfs:comment "The end date of an event with duration (e.g., refit completion, deployment end)."@en ;
+    rdfs:domain ship:ShipEvent ;
+    rdfs:range xsd:date .
+
+# ============================================================================
+# DATA PROPERTIES - EVENT-SPECIFIC
+# ============================================================================
+
+# Renamed Event Properties
+ship:oldName a owl:DatatypeProperty ;
+    rdfs:label "old name"@en ;
+    rdfs:comment "The previous name of the ship before renaming."@en ;
+    rdfs:domain ship:Renamed ;
+    rdfs:range xsd:string .
+
+ship:newName a owl:DatatypeProperty ;
+    rdfs:label "new name"@en ;
+    rdfs:comment "The new name of the ship after renaming."@en ;
+    rdfs:domain ship:Renamed ;
+    rdfs:range xsd:string .
+
+# Reclassified Event Properties
+ship:oldClassification a owl:DatatypeProperty ;
+    rdfs:label "old classification"@en ;
+    rdfs:comment "The previous ship type or classification before reclassification."@en ;
+    rdfs:domain ship:Reclassified ;
+    rdfs:range xsd:string .
+
+ship:newClassification a owl:DatatypeProperty ;
+    rdfs:label "new classification"@en ;
+    rdfs:comment "The new ship type or classification after reclassification."@en ;
+    rdfs:domain ship:Reclassified ;
+    rdfs:range xsd:string .
+
+# Operator Changed Event Properties
+ship:oldOperator a owl:DatatypeProperty ;
+    rdfs:label "old operator"@en ;
+    rdfs:comment "The previous operator (navy/organization) before the change."@en ;
+    rdfs:domain ship:OperatorChanged ;
+    rdfs:range xsd:string .
+
+ship:newOperator a owl:DatatypeProperty ;
+    rdfs:label "new operator"@en ;
+    rdfs:comment "The new operator (navy/organization) after the change."@en ;
+    rdfs:domain ship:OperatorChanged ;
+    rdfs:range xsd:string .
+
+# Refit Event Properties
+ship:refitType a owl:DatatypeProperty ;
+    rdfs:label "refit type"@en ;
+    rdfs:comment "The type of refit or modernization performed. Examples: Major Overhaul, Modernization, Conversion."@en ;
+    rdfs:domain ship:Refit ;
+    rdfs:range xsd:string .
+
+ship:refitDescription a owl:DatatypeProperty ;
+    rdfs:label "refit description"@en ;
+    rdfs:comment "A description of the work performed during the refit."@en ;
+    rdfs:domain ship:Refit ;
+    rdfs:range xsd:string .
+
+# Deployment Event Properties
+ship:deploymentArea a owl:DatatypeProperty ;
+    rdfs:label "deployment area"@en ;
+    rdfs:comment "The geographic area or region of the deployment. Examples: Western Pacific, Mediterranean, Persian Gulf."@en ;
+    rdfs:domain ship:Deployment ;
+    rdfs:range xsd:string .
+
+ship:deploymentPurpose a owl:DatatypeProperty ;
+    rdfs:label "deployment purpose"@en ;
+    rdfs:comment "The purpose or mission of the deployment. Examples: Training, Combat Operations, Humanitarian Aid."@en ;
+    rdfs:domain ship:Deployment ;
+    rdfs:range xsd:string .
+
+# ============================================================================
+# ANNOTATIONS AND CONSTRAINTS
+# ============================================================================
+
+# Point-in-time events should use eventDate
+ship:LaidDown rdfs:comment "Use eventDate property for the date the keel was laid."@en .
+ship:Launched rdfs:comment "Use eventDate property for the launch date."@en .
+ship:Commissioned rdfs:comment "Use eventDate property for the commission date."@en .
+ship:Decommissioned rdfs:comment "Use eventDate property for the decommission date."@en .
+ship:Renamed rdfs:comment "Use eventDate property for the date of renaming."@en .
+ship:Reclassified rdfs:comment "Use eventDate property for the date of reclassification."@en .
+ship:OperatorChanged rdfs:comment "Use eventDate property for the date of operator change."@en .
+
+# Duration events should use eventStartDate and eventEndDate
+ship:Refit rdfs:comment "Use eventStartDate and eventEndDate for refit duration. If only one date is known, use eventDate."@en .
+ship:Deployment rdfs:comment "Use eventStartDate and eventEndDate for deployment duration."@en .
+
+# ============================================================================
+# LINKING TO CORE ONTOLOGY
+# ============================================================================
+
+# Note: Commission and Decommission events link to core ontology dates
+# ship:commissionDate and ship:decommissionDate in core ontology
+# should be synchronized with Commissioned and Decommissioned events

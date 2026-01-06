@@ -1,0 +1,533 @@
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix ship: <https://example.org/ship-ontology/> .
+@prefix ship-entity: <https://example.org/ship-ontology/entity/> .
+
+# RML Mapping for Wikidata Query Service (WDQS) JSON Export
+# Maps WDQS JSON data to RDF using the naval core ontology
+# Source: data/raw/wdqs_export.json
+# Version: 1.0
+# Created: 2024-01-15
+
+# ============================================================================
+# LOGICAL SOURCE
+# ============================================================================
+
+<#WDQSSource> a rml:LogicalSource ;
+    rml:source "data/raw/wdqs_export.json" ;
+    rml:referenceFormulation ql:JSONPath ;
+    rml:iterator "$.vessels[*]" .
+
+# ============================================================================
+# PROVENANCE METADATA
+# ============================================================================
+
+<#WDQSProvenance> a prov:Entity ;
+    prov:wasAttributedTo <https://query.wikidata.org/sparql> ;
+    dct:source <https://query.wikidata.org/sparql> ;
+    dct:title "Wikidata Query Service (WDQS)" ;
+    dct:description "Public knowledge base export for international naval vessels" ;
+    prov:generatedAtTime "2024-01-14T08:15:00Z"^^xsd:dateTime .
+
+# ============================================================================
+# SHIP MAPPING
+# ============================================================================
+
+<#ShipMapping> a rr:TriplesMap ;
+    rml:logicalSource <#WDQSSource> ;
+    
+    # Subject: Ship URI (priority: hull_symbol > imo_number > mmsi > pennant+operator)
+    rr:subjectMap [
+        rr:template "https://example.org/ship-ontology/entity/ship/{hull_symbol}" ;
+        rr:class ship:Ship ;
+        rml:condition [
+            rml:reference "hull_symbol" ;
+            rml:logicalTarget [
+                rml:referenceFormulation ql:JSONPath ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Alternative: IMO-based URI
+    rr:subjectMap [
+        rr:template "https://example.org/ship-ontology/entity/ship/IMO-{imo_number}" ;
+        rr:class ship:Ship ;
+        rml:condition [
+            rml:reference "imo_number" ;
+            rml:logicalTarget [
+                rml:referenceFormulation ql:JSONPath ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Alternative: MMSI-based URI
+    rr:subjectMap [
+        rr:template "https://example.org/ship-ontology/entity/ship/MMSI-{mmsi}" ;
+        rr:class ship:Ship ;
+        rml:condition [
+            rml:reference "mmsi" ;
+            rml:logicalTarget [
+                rml:referenceFormulation ql:JSONPath ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Ship Name
+    rr:predicateObjectMap [
+        rr:predicate ship:shipName ;
+        rr:objectMap [
+            rml:reference "name" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+        ] ;
+    ] ;
+    
+    # Hull Symbol (if present)
+    rr:predicateObjectMap [
+        rr:predicate ship:hullSymbol ;
+        rr:objectMap [
+            rml:reference "hull_symbol" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+            rml:condition [
+                rml:reference "hull_symbol" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # IMO Number (if present)
+    rr:predicateObjectMap [
+        rr:predicate ship:imoNumber ;
+        rr:objectMap [
+            rml:reference "imo_number" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+            rml:condition [
+                rml:reference "imo_number" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # MMSI (if present)
+    rr:predicateObjectMap [
+        rr:predicate ship:mmsi ;
+        rr:objectMap [
+            rml:reference "mmsi" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+            rml:condition [
+                rml:reference "mmsi" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Pennant Number (if present)
+    rr:predicateObjectMap [
+        rr:predicate ship:pennantNumber ;
+        rr:objectMap [
+            rml:reference "pennant_number" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+            rml:condition [
+                rml:reference "pennant_number" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Wikidata ID (for cross-reference)
+    rr:predicateObjectMap [
+        rr:predicate dct:identifier ;
+        rr:objectMap [
+            rml:reference "wikidata_id" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+            rml:condition [
+                rml:reference "wikidata_id" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Status
+    rr:predicateObjectMap [
+        rr:predicate ship:status ;
+        rr:objectMap [
+            rml:reference "status" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+        ] ;
+    ] ;
+    
+    # Commission Date
+    rr:predicateObjectMap [
+        rr:predicate ship:commissionDate ;
+        rr:objectMap [
+            rml:reference "commission_date" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:date ;
+            rml:condition [
+                rml:reference "commission_date" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Launch Date
+    rr:predicateObjectMap [
+        rr:predicate ship:launchDate ;
+        rr:objectMap [
+            rml:reference "launch_date" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:date ;
+            rml:condition [
+                rml:reference "launch_date" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Technical Specifications: Length
+    rr:predicateObjectMap [
+        rr:predicate ship:length ;
+        rr:objectMap [
+            rml:reference "length" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:decimal ;
+            rml:condition [
+                rml:reference "length" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Waterline Length
+    rr:predicateObjectMap [
+        rr:predicate ship:waterlineLength ;
+        rr:objectMap [
+            rml:reference "waterline_length" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:decimal ;
+            rml:condition [
+                rml:reference "waterline_length" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Beam
+    rr:predicateObjectMap [
+        rr:predicate ship:beam ;
+        rr:objectMap [
+            rml:reference "beam" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:decimal ;
+            rml:condition [
+                rml:reference "beam" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Draft
+    rr:predicateObjectMap [
+        rr:predicate ship:draft ;
+        rr:objectMap [
+            rml:reference "draft" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:decimal ;
+            rml:condition [
+                rml:reference "draft" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Displacement: Light
+    rr:predicateObjectMap [
+        rr:predicate ship:displacementLight ;
+        rr:objectMap [
+            rml:reference "displacement_light" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:decimal ;
+            rml:condition [
+                rml:reference "displacement_light" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Displacement: Standard
+    rr:predicateObjectMap [
+        rr:predicate ship:displacementStandard ;
+        rr:objectMap [
+            rml:reference "displacement_standard" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:decimal ;
+            rml:condition [
+                rml:reference "displacement_standard" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Displacement: Full Load
+    rr:predicateObjectMap [
+        rr:predicate ship:displacementFullLoad ;
+        rr:objectMap [
+            rml:reference "displacement_full_load" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:decimal ;
+            rml:condition [
+                rml:reference "displacement_full_load" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Crew Complement
+    rr:predicateObjectMap [
+        rr:predicate ship:crewComplement ;
+        rr:objectMap [
+            rml:reference "crew_complement" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:integer ;
+            rml:condition [
+                rml:reference "crew_complement" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Maximum Speed
+    rr:predicateObjectMap [
+        rr:predicate ship:maxSpeed ;
+        rr:objectMap [
+            rml:reference "speed_max" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:decimal ;
+            rml:condition [
+                rml:reference "speed_max" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Propulsion Type
+    rr:predicateObjectMap [
+        rr:predicate ship:propulsionType ;
+        rr:objectMap [
+            rml:reference "propulsion_type" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+            rml:condition [
+                rml:reference "propulsion_type" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Ship Type
+    rr:predicateObjectMap [
+        rr:predicate ship:shipType ;
+        rr:objectMap [
+            rml:reference "ship_type" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+        ] ;
+    ] ;
+    
+    # Link to Ship Class
+    rr:predicateObjectMap [
+        rr:predicate ship:hasClass ;
+        rr:objectMap [
+            rr:template "https://example.org/ship-ontology/entity/class/{class}" ;
+            rr:termType rr:IRI ;
+            rml:reference "class" ;
+            rml:transformation [
+                rml:function <#normalizeClassName> ;
+                rml:parameter [
+                    rml:reference "class" ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Link to Operator
+    rr:predicateObjectMap [
+        rr:predicate ship:operatedBy ;
+        rr:objectMap [
+            rr:template "https://example.org/ship-ontology/entity/operator/{operator}" ;
+            rr:termType rr:IRI ;
+            rml:reference "operator" ;
+            rml:transformation [
+                rml:function <#normalizeOperator> ;
+                rml:parameter [
+                    rml:reference "operator" ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Provenance: Source
+    rr:predicateObjectMap [
+        rr:predicate dct:source ;
+        rr:objectMap [
+            rr:constant <https://query.wikidata.org/sparql> ;
+            rr:termType rr:IRI ;
+        ] ;
+    ] ;
+    
+    # Provenance: Extraction Date
+    rr:predicateObjectMap [
+        rr:predicate prov:generatedAtTime ;
+        rr:objectMap [
+            rr:constant "2024-01-14T08:15:00Z"^^xsd:dateTime ;
+            rr:termType rr:Literal ;
+        ] ;
+    ] ;
+    
+    # Provenance: Wikidata ID
+    rr:predicateObjectMap [
+        rr:predicate prov:wasDerivedFrom ;
+        rr:objectMap [
+            rr:template "https://www.wikidata.org/entity/{wikidata_id}" ;
+            rr:termType rr:IRI ;
+            rml:reference "wikidata_id" ;
+            rml:condition [
+                rml:reference "wikidata_id" ;
+                rml:logicalTarget [
+                    rml:referenceFormulation ql:JSONPath ;
+                ] ;
+            ] ;
+        ] ;
+    ] .
+
+# ============================================================================
+# SHIP CLASS MAPPING
+# ============================================================================
+
+<#ShipClassMapping> a rr:TriplesMap ;
+    rml:logicalSource <#WDQSSource> ;
+    
+    # Subject: Ship Class URI
+    rr:subjectMap [
+        rr:template "https://example.org/ship-ontology/entity/class/{class}" ;
+        rr:class ship:ShipClass ;
+        rml:transformation [
+            rml:function <#normalizeClassName> ;
+            rml:parameter [
+                rml:reference "class" ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Class Name
+    rr:predicateObjectMap [
+        rr:predicate ship:className ;
+        rr:objectMap [
+            rml:reference "class" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+        ] ;
+    ] ;
+    
+    # Provenance
+    rr:predicateObjectMap [
+        rr:predicate dct:source ;
+        rr:objectMap [
+            rr:constant <https://query.wikidata.org/sparql> ;
+            rr:termType rr:IRI ;
+        ] ;
+    ] .
+
+# ============================================================================
+# OPERATOR MAPPING
+# ============================================================================
+
+<#OperatorMapping> a rr:TriplesMap ;
+    rml:logicalSource <#WDQSSource> ;
+    
+    # Subject: Operator URI
+    rr:subjectMap [
+        rr:template "https://example.org/ship-ontology/entity/operator/{operator}" ;
+        rr:class ship:Operator ;
+        rml:transformation [
+            rml:function <#normalizeOperator> ;
+            rml:parameter [
+                rml:reference "operator" ;
+            ] ;
+        ] ;
+    ] ;
+    
+    # Operator Name
+    rr:predicateObjectMap [
+        rr:predicate ship:operatorName ;
+        rr:objectMap [
+            rml:reference "operator" ;
+            rr:termType rr:Literal ;
+            rr:datatype xsd:string ;
+        ] ;
+    ] ;
+    
+    # Provenance
+    rr:predicateObjectMap [
+        rr:predicate dct:source ;
+        rr:objectMap [
+            rr:constant <https://query.wikidata.org/sparql> ;
+            rr:termType rr:IRI ;
+        ] ;
+    ] .
+
+# ============================================================================
+# NORMALIZATION FUNCTIONS (Placeholder - implement in RML processor)
+# ============================================================================
+
+<#normalizeClassName> a rml:Function ;
+    rdfs:comment "Normalizes class name for URI (e.g., 'Nimitz-class aircraft carrier' -> 'nimitz')" .
+
+<#normalizeOperator> a rml:Function ;
+    rdfs:comment "Normalizes operator name to operator code (e.g., 'United States Navy' -> 'USN')" .

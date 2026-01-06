@@ -1,0 +1,158 @@
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ship: <https://example.org/ship-ontology/> .
+
+# Ship Type Concept Scheme
+# Based on US Navy Hull Classification Symbols and international naval terminology
+# Reference: https://www.nvr.navy.mil
+
+ship:shipTypeScheme a skos:ConceptScheme ;
+    skos:prefLabel "Ship Type Classification"@en ;
+    skos:definition "Hierarchical classification of naval vessels by type, based on US Navy Hull Classification Symbol system and international standards."@en ;
+    dct:source <https://www.nvr.navy.mil> ;
+    dct:modified "2024-01-15"^^xsd:date .
+
+# Top-level: Surface Combatant
+ship:surfaceCombatant a skos:Concept ;
+    skos:inScheme ship:shipTypeScheme ;
+    skos:prefLabel "Surface Combatant"@en ;
+    skos:altLabel "Surface Ship"@en ;
+    skos:altLabel "Surface Vessel"@en ;
+    skos:definition "A naval vessel designed for surface warfare operations, including destroyers, cruisers, frigates, and corvettes."@en ;
+    skos:note "Broad category encompassing all surface warships designed for combat operations."@en .
+
+# Aircraft Carrier
+ship:aircraftCarrier a skos:Concept ;
+    skos:inScheme ship:shipTypeScheme ;
+    skos:broader ship:surfaceCombatant ;
+    skos:prefLabel "Aircraft Carrier"@en ;
+    skos:altLabel "Carrier"@en ;
+    skos:altLabel "CV"@en ;
+    skos:altLabel "CVN"@en ;
+    skos:definition "A large warship designed to deploy and recover aircraft, serving as a seagoing airbase. Nuclear-powered variants use hull symbol CVN, conventional use CV."@en ;
+    skos:note "Primary role: power projection and air superiority. Examples: CVN-68 (Nimitz), CV-41 (Midway)."@en .
+
+ship:nuclearAircraftCarrier a skos:Concept ;
+    skos:inScheme ship:shipTypeScheme ;
+    skos:broader ship:aircraftCarrier ;
+    skos:prefLabel "Nuclear-Powered Aircraft Carrier"@en ;
+    skos:altLabel "CVN"@en ;
+    skos:altLabel "Nuclear Carrier"@en ;
+    skos:definition "Aircraft carrier powered by nuclear reactors, providing extended operational range and endurance without refueling."@en ;
+    skos:note "Hull classification symbol: CVN. Examples: CVN-68 (Nimitz), CVN-71 (Theodore Roosevelt)."@en .
+
+ship:conventionalAircraftCarrier a skos:Concept ;
+    skos:inScheme ship:shipTypeScheme ;
+    skos:broader ship:aircraftCarrier ;
+    skos:prefLabel "Conventional Aircraft Carrier"@en ;
+    skos:altLabel "CV"@en ;
+    skos:altLabel "Conventional Carrier"@en ;
+    skos:definition "Aircraft carrier powered by conventional (non-nuclear) propulsion systems."@en ;
+    skos:note "Hull classification symbol: CV. Most modern carriers are nuclear-powered."@en .
+
+# Cruiser
+ship:cruiser a skos:Concept ;
+    skos:inScheme ship:shipTypeScheme ;
+    skos:broader ship:surfaceCombatant ;
+    skos:prefLabel "Cruiser"@en ;
+    skos:altLabel "CG"@en ;
+    skos:definition "A large surface warship capable of independent operations, typically larger than destroyers but smaller than battleships."@en ;
+    skos:note "Historically used for scouting and fleet support. Modern cruisers focus on air defense and surface warfare."@en .
+
+ship:guidedMissileCruiser a skos:Concept ;
+    skos:inScheme ship:shipTypeScheme ;
+    skos:broader ship:cruiser ;
+    skos:prefLabel "Guided Missile Cruiser"@en ;
+    skos:altLabel "CG"@en ;
+    skos:altLabel "Missile Cruiser"@en ;
+    skos:definition "A cruiser equipped with guided missile systems for air defense and surface warfare."@en ;
+    skos:note "Hull classification symbol: CG. Examples: CG-47 (Ticonderoga class)."@en .
+
+# Destroyer
+ship:destroyer a skos:Concept ;
+    skos:inScheme ship:shipTypeScheme ;
+    skos:broader ship:surfaceCombatant ;
+    skos:prefLabel "Destroyer"@en ;
+    skos:altLabel "DD"@en ;
+    skos:altLabel "Destroyer Escort"@en ;
+    skos:definition "A fast, maneuverable, long-endurance warship intended to escort larger vessels and defend against surface and air threats."@en ;
+    skos:note "Multi-mission surface combatant. Can be reclassified to Guided Missile Destroyer (DDG)."@en .
+
+ship:guidedMissileDestroyer a skos:Concept ;
+    skos:inScheme ship:shipTypeScheme ;
+    skos:broader ship:destroyer ;
+    skos:prefLabel "Guided Missile Destroyer"@en ;
+    skos:altLabel "DDG"@en ;
+    skos:altLabel "Missile Destroyer"@en ;
+    skos:definition "A destroyer equipped with guided missile systems for air defense, anti-submarine warfare, and surface warfare."@en ;
+    skos:note "Hull classification symbol: DDG. Examples: DDG-51 (Arleigh Burke class). Ships may be reclassified from DD to DDG."@en .
+
+# Frigate (for international coverage)
+ship:frigate a skos:Concept ;
+    skos:inScheme ship:shipTypeScheme ;
+    skos:broader ship:surfaceCombatant ;
+    skos:prefLabel "Frigate"@en ;
+    skos:altLabel "FF"@en ;
+    skos:altLabel "FFG"@en ;
+    skos:definition "A smaller surface warship, typically used for escort and patrol duties. Smaller than destroyers but larger than corvettes."@en ;
+    skos:note "Common in international navies. US Navy retired frigate designation in 2015, but concept remains for international vessels."@en .
+
+# Battleship
+ship:battleship a skos:Concept ;
+    skos:inScheme ship:shipTypeScheme ;
+    skos:broader ship:surfaceCombatant ;
+    skos:prefLabel "Battleship"@en ;
+    skos:altLabel "BB"@en ;
+    skos:altLabel "Battle Ship"@en ;
+    skos:definition "A large, heavily armored warship with a main battery of large-caliber guns. Most modern navies have decommissioned battleships."@en ;
+    skos:note "Hull classification symbol: BB. Most battleships are now museum ships or decommissioned. Examples: BB-61 (Iowa class)."@en ;
+    skos:note "Deprecated for new construction but retained for historical vessels."@en .
+
+# Amphibious Warfare
+ship:amphibiousAssaultShip a skos:Concept ;
+    skos:inScheme ship:shipTypeScheme ;
+    skos:broader ship:surfaceCombatant ;
+    skos:prefLabel "Amphibious Assault Ship"@en ;
+    skos:altLabel "LHA"@en ;
+    skos:altLabel "Amphibious Ship"@en ;
+    skos:altLabel "Amphibious"@en ;
+    skos:definition "A warship designed to support amphibious assault operations by carrying and deploying landing forces, aircraft, and equipment."@en ;
+    skos:note "Hull classification symbols: LHA (Amphibious Assault Ship), LHD (Amphibious Assault Dock), LPD (Amphibious Transport Dock). Examples: LHA-6 (America class)."@en .
+
+# Submarine
+ship:submarine a skos:Concept ;
+    skos:inScheme ship:shipTypeScheme ;
+    skos:prefLabel "Submarine"@en ;
+    skos:altLabel "Sub"@en ;
+    skos:altLabel "SS"@en ;
+    skos:definition "A watercraft capable of independent operation underwater, used for naval warfare, intelligence gathering, and strategic deterrence."@en ;
+    skos:note "Submarines operate independently of surface combatants and have distinct operational characteristics."@en .
+
+ship:attackSubmarine a skos:Concept ;
+    skos:inScheme ship:shipTypeScheme ;
+    skos:broader ship:submarine ;
+    skos:prefLabel "Attack Submarine"@en ;
+    skos:altLabel "SSN"@en ;
+    skos:altLabel "Fast Attack Submarine"@en ;
+    skos:definition "A submarine designed primarily for anti-submarine warfare, anti-surface warfare, and intelligence gathering."@en ;
+    skos:note "Hull classification symbol: SSN (nuclear-powered) or SS (conventional). Examples: SSN-688 (Los Angeles class)."@en .
+
+ship:nuclearAttackSubmarine a skos:Concept ;
+    skos:inScheme ship:shipTypeScheme ;
+    skos:broader ship:attackSubmarine ;
+    skos:prefLabel "Nuclear-Powered Attack Submarine"@en ;
+    skos:altLabel "SSN"@en ;
+    skos:altLabel "Nuclear Attack Sub"@en ;
+    skos:definition "Attack submarine powered by nuclear reactors, providing extended underwater endurance and high speed."@en ;
+    skos:note "Hull classification symbol: SSN. Most modern attack submarines are nuclear-powered."@en .
+
+# Auxiliary and Support (for completeness)
+ship:auxiliaryShip a skos:Concept ;
+    skos:inScheme ship:shipTypeScheme ;
+    skos:prefLabel "Auxiliary Ship"@en ;
+    skos:altLabel "Auxiliary"@en ;
+    skos:definition "A naval vessel designed to support combatant ships and naval operations, including supply, repair, and transport functions."@en ;
+    skos:note "Includes oilers, supply ships, repair ships, and other support vessels. Not primary combatants."@en .

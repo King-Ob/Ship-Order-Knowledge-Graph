@@ -1,0 +1,108 @@
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ship: <https://example.org/ship-ontology/> .
+
+# Status Concept Scheme
+# Based on US Navy Vessel Register (NVR) lifecycle status
+# Reference: https://www.nvr.navy.mil
+# Authoritative source for US Navy vessel status
+
+ship:statusScheme a skos:ConceptScheme ;
+    skos:prefLabel "Naval Vessel Lifecycle Status"@en ;
+    skos:definition "Classification of naval vessels by their current operational and lifecycle status, as recorded in the Navy Vessel Register."@en ;
+    dct:source <https://www.nvr.navy.mil> ;
+    dct:modified "2024-01-15"^^xsd:date .
+
+# Active
+ship:active a skos:Concept ;
+    skos:inScheme ship:statusScheme ;
+    skos:prefLabel "Active"@en ;
+    skos:altLabel "In Service"@en ;
+    skos:altLabel "Commissioned"@en ;
+    skos:altLabel "Operational"@en ;
+    skos:definition "Vessel is currently in active service, fully crewed, and capable of performing its assigned missions. Vessel has been commissioned and has not been decommissioned."@en ;
+    skos:note "Authoritative status from NVR. Vessel is part of the active fleet and may be deployed on operations."@en ;
+    skos:scopeNote "Distinct from 'Commissioned' which refers to the commissioning event. A vessel can be Active (status) after being Commissioned (event)."@en .
+
+# Reserve
+ship:reserve a skos:Concept ;
+    skos:inScheme ship:statusScheme ;
+    skos:prefLabel "Reserve"@en ;
+    skos:altLabel "Reserve Fleet"@en ;
+    skos:altLabel "In Reserve"@en ;
+    skos:altLabel "Mothballed"@en ;
+    skos:definition "Vessel is maintained in a reserve status, not actively deployed but capable of being reactivated for service if needed. Vessel is preserved but not fully crewed or operational."@en ;
+    skos:note "Vessels in reserve are typically maintained in reduced manning status and may require reactivation procedures before deployment."@en .
+
+# Decommissioned
+ship:decommissioned a skos:Concept ;
+    skos:inScheme ship:statusScheme ;
+    skos:prefLabel "Decommissioned"@en ;
+    skos:altLabel "Decom"@en ;
+    skos:altLabel "Out of Service"@en ;
+    skos:altLabel "Stricken"@en ;
+    skos:definition "Vessel has been formally removed from active service through a decommissioning ceremony. The vessel is no longer part of the active fleet and may be disposed of, scrapped, or transferred."@en ;
+    skos:note "Authoritative status from NVR. Decommissioning date is recorded in NVR. Vessel may be awaiting disposal, scrapping, or transfer to another entity."@en ;
+    skos:scopeNote "Not to be confused with 'Stricken' which is a separate administrative action, though decommissioned vessels are often stricken from the register."@en .
+
+# Museum
+ship:museum a skos:Concept ;
+    skos:inScheme ship:statusScheme ;
+    skos:prefLabel "Museum"@en ;
+    skos:altLabel "Museum Ship"@en ;
+    skos:altLabel "Preserved"@en ;
+    skos:altLabel "Memorial"@en ;
+    skos:definition "Vessel has been preserved as a museum ship or memorial, typically after decommissioning. The vessel is maintained for public display and historical preservation."@en ;
+    skos:note "Museum ships are typically decommissioned vessels that have been transferred to museums or historical organizations. Examples: USS Midway (CV-41), USS Iowa (BB-61)."@en ;
+    skos:scopeNote "Museum status is a post-decommissioning status. Vessels are first decommissioned, then may be designated as museum ships."@en .
+
+# Under Construction
+ship:underConstruction a skos:Concept ;
+    skos:inScheme ship:statusScheme ;
+    skos:prefLabel "Under Construction"@en ;
+    skos:altLabel "Building"@en ;
+    skos:altLabel "In Build"@en ;
+    skos:altLabel "Under Build"@en ;
+    skos:definition "Vessel is currently under construction and has not yet been launched or commissioned."@en ;
+    skos:note "Vessel exists as a hull or is being assembled but is not yet operational. Not present in current dataset but included for completeness."@en .
+
+# Launched
+ship:launched a skos:Concept ;
+    skos:inScheme ship:statusScheme ;
+    skos:prefLabel "Launched"@en ;
+    skos:altLabel "Launched, Not Commissioned"@en ;
+    skos:definition "Vessel has been launched (entered the water) but has not yet been commissioned into active service."@en ;
+    skos:note "Temporary status between launch and commissioning. Vessel undergoes fitting out and sea trials before commissioning."@en ;
+    skos:scopeNote "This is a temporal status. Once commissioned, status changes to Active (if immediately entering service) or another appropriate status."@en .
+
+# Scrapped
+ship:scrapped a skos:Concept ;
+    skos:inScheme ship:statusScheme ;
+    skos:prefLabel "Scrapped"@en ;
+    skos:altLabel "Scrapped"@en ;
+    skos:altLabel "Disposed"@en ;
+    skos:altLabel "Recycled"@en ;
+    skos:definition "Vessel has been scrapped, dismantled, or recycled. The vessel no longer exists as a complete unit."@en ;
+    skos:note "Final disposition status. Vessel has been broken up for scrap metal and materials. Typically occurs after decommissioning."@en ;
+    skos:scopeNote "Scrapped is a final disposition status, distinct from decommissioned. A vessel is first decommissioned, then may be scrapped."@en .
+
+# Sunk
+ship:sunk a skos:Concept ;
+    skos:inScheme ship:statusScheme ;
+    skos:prefLabel "Sunk"@en ;
+    skos:altLabel "Lost"@en ;
+    skos:altLabel "Sunk in Action"@en ;
+    skos:definition "Vessel was sunk, either in combat, accident, or as an artificial reef. The vessel is no longer operational and may be underwater."@en ;
+    skos:note "Final disposition status. Vessel may be sunk intentionally (artificial reef, target practice) or unintentionally (combat loss, accident)."@en .
+
+# Transferred
+ship:transferred a skos:Concept ;
+    skos:inScheme ship:statusScheme ;
+    skos:prefLabel "Transferred"@en ;
+    skos:altLabel "Transferred to Another Entity"@en ;
+    skos:altLabel "Foreign Transfer"@en ;
+    skos:definition "Vessel has been transferred to another navy, government entity, or organization. The vessel is no longer under original ownership."@en ;
+    skos:note "Vessel may be transferred to foreign navies, coast guards, or other government agencies. Transfer typically occurs after decommissioning."@en .

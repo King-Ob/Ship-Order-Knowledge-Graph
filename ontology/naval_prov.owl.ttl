@@ -1,0 +1,230 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix ship: <https://example.org/ship-ontology/> .
+@prefix ship-entity: <https://example.org/ship-ontology/entity/> .
+
+# Naval Provenance and Trust Ontology
+# Extends PROV-O for claim-level provenance tracking
+# Version: 1.0
+# Created: 2024-01-15
+# Reference: PROV-O (https://www.w3.org/TR/prov-o/)
+
+ship:prov a owl:Ontology ;
+    owl:versionInfo "1.0" ;
+    owl:imports <naval_core.owl.ttl> ;
+    owl:imports <http://www.w3.org/ns/prov#> ;
+    rdfs:comment "Provenance and trust ontology for naval vessel knowledge graph. Models every fact as a claim with source, activity, timestamp, and confidence."@en ;
+    dct:title "Naval Vessel Provenance Ontology"@en ;
+    dct:description "OWL 2 ontology extending PROV-O for claim-level provenance tracking with confidence scores."@en ;
+    dct:created "2024-01-15"^^xsd:date ;
+    dct:modified "2024-01-15"^^xsd:date .
+
+# ============================================================================
+# PROVENANCE CLASSES
+# ============================================================================
+
+# Claim: A statement about a ship with provenance
+ship:Claim a owl:Class ;
+    rdfs:subClassOf prov:Entity ;
+    rdfs:label "Claim"@en ;
+    rdfs:comment "A claim is a statement about a ship (e.g., displacement value, commission date) with associated provenance information including source, extraction activity, timestamp, and confidence score."@en ;
+    rdfs:seeAlso <https://www.w3.org/TR/prov-o/#Entity> .
+
+# Data Source: The source dataset or system
+ship:DataSource a owl:Class ;
+    rdfs:subClassOf prov:Agent ;
+    rdfs:label "Data Source"@en ;
+    rdfs:comment "A data source (dataset, database, API) that provides information about ships. Examples: NVR, WDQS, messy CSV."@en ;
+    rdfs:seeAlso <https://www.w3.org/TR/prov-o/#Agent> .
+
+# Extraction Activity: The activity that extracted/created the claim
+ship:ExtractionActivity a owl:Class ;
+    rdfs:subClassOf prov:Activity ;
+    rdfs:label "Extraction Activity"@en ;
+    rdfs:comment "An activity that extracted or created a claim from a data source. Examples: RML mapping, manual entry, API query."@en ;
+    rdfs:seeAlso <https://www.w3.org/TR/prov-o/#Activity> .
+
+# ============================================================================
+# PROVENANCE PROPERTIES
+# ============================================================================
+
+# Links claim to the ship it describes
+ship:aboutShip a owl:ObjectProperty ;
+    rdfs:label "about ship"@en ;
+    rdfs:comment "Links a claim to the ship it describes."@en ;
+    rdfs:domain ship:Claim ;
+    rdfs:range ship:Ship ;
+    rdfs:subPropertyOf prov:wasAttributedTo .
+
+# Links claim to the property it asserts
+ship:assertsProperty a owl:ObjectProperty ;
+    rdfs:label "asserts property"@en ;
+    rdfs:comment "Links a claim to the property (predicate) it asserts. Example: ship:displacementFullLoad."@en ;
+    rdfs:domain ship:Claim ;
+    rdfs:range owl:ObjectProperty .
+
+# The value asserted by the claim
+ship:claimValue a owl:DatatypeProperty ;
+    rdfs:label "claim value"@en ;
+    rdfs:comment "The value asserted by the claim. Can be a string, number, date, or IRI."@en ;
+    rdfs:domain ship:Claim ;
+    rdfs:range rdfs:Literal .
+
+# Confidence score for the claim (0.0 to 1.0)
+ship:confidenceScore a owl:DatatypeProperty ;
+    rdfs:label "confidence score"@en ;
+    rdfs:comment "A confidence score for the claim, ranging from 0.0 (low confidence) to 1.0 (high confidence)."@en ;
+    rdfs:domain ship:Claim ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf prov:value .
+
+# Links claim to data source
+ship:hasSource a owl:ObjectProperty ;
+    rdfs:label "has source"@en ;
+    rdfs:comment "Links a claim to its data source (dataset, database, API)."@en ;
+    rdfs:domain ship:Claim ;
+    rdfs:range ship:DataSource ;
+    rdfs:subPropertyOf prov:wasAttributedTo .
+
+# Links claim to extraction activity
+ship:extractedBy a owl:ObjectProperty ;
+    rdfs:label "extracted by"@en ;
+    rdfs:comment "Links a claim to the extraction activity that created it."@en ;
+    rdfs:domain ship:Claim ;
+    rdfs:range ship:ExtractionActivity ;
+    rdfs:subPropertyOf prov:wasGeneratedBy .
+
+# Extraction timestamp
+ship:extractedAt a owl:DatatypeProperty ;
+    rdfs:label "extracted at"@en ;
+    rdfs:comment "The timestamp when the claim was extracted or created."@en ;
+    rdfs:domain ship:Claim ;
+    rdfs:range xsd:dateTime ;
+    rdfs:subPropertyOf prov:generatedAtTime .
+
+# Source extraction timestamp (when data was extracted from source)
+ship:sourceExtractedAt a owl:DatatypeProperty ;
+    rdfs:label "source extracted at"@en ;
+    rdfs:comment "The timestamp when the data was extracted from the source dataset."@en ;
+    rdfs:domain ship:DataSource ;
+    rdfs:range xsd:dateTime .
+
+# Source URL
+ship:sourceURL a owl:DatatypeProperty ;
+    rdfs:label "source URL"@en ;
+    rdfs:comment "The URL or identifier of the data source."@en ;
+    rdfs:domain ship:DataSource ;
+    rdfs:range xsd:anyURI .
+
+# Source authority level
+ship:authorityLevel a owl:DatatypeProperty ;
+    rdfs:label "authority level"@en ;
+    rdfs:comment "The authority level of the source (e.g., 'authoritative', 'verified', 'community', 'unverified')."@en ;
+    rdfs:domain ship:DataSource ;
+    rdfs:range xsd:string .
+
+# Activity type
+ship:activityType a owl:DatatypeProperty ;
+    rdfs:label "activity type"@en ;
+    rdfs:comment "The type of extraction activity (e.g., 'RML_Mapping', 'Manual_Entry', 'API_Query')."@en ;
+    rdfs:domain ship:ExtractionActivity ;
+    rdfs:range xsd:string .
+
+# Activity configuration
+ship:activityConfig a owl:DatatypeProperty ;
+    rdfs:label "activity configuration"@en ;
+    rdfs:comment "Configuration or parameters used in the extraction activity (e.g., mapping file path, query string)."@en ;
+    rdfs:domain ship:ExtractionActivity ;
+    rdfs:range xsd:string .
+
+# ============================================================================
+# CONFLICT TRACKING
+# ============================================================================
+
+# Links conflicting claims
+ship:conflictsWith a owl:ObjectProperty ;
+    rdfs:label "conflicts with"@en ;
+    rdfs:comment "Links a claim to another claim that conflicts with it (asserts different value for same property)."@en ;
+    rdfs:domain ship:Claim ;
+    rdfs:range ship:Claim ;
+    owl:propertyDisjointWith ship:sameClaimAs .
+
+# Links claims that assert the same value
+ship:sameClaimAs a owl:ObjectProperty ;
+    rdfs:label "same claim as"@en ;
+    rdfs:comment "Links a claim to another claim that asserts the same value (agreement)."@en ;
+    rdfs:domain ship:Claim ;
+    rdfs:range ship:Claim ;
+    owl:propertyDisjointWith ship:conflictsWith .
+
+# Preferred claim (for conflict resolution)
+ship:isPreferred a owl:DatatypeProperty ;
+    rdfs:label "is preferred"@en ;
+    rdfs:comment "Indicates whether this claim is the preferred one when conflicts exist (based on precedence rules)."@en ;
+    rdfs:domain ship:Claim ;
+    rdfs:range xsd:boolean .
+
+# ============================================================================
+# PROVENANCE PATTERNS
+# ============================================================================
+
+# Pattern: Claim about a ship property
+# Example: "USS Nimitz has displacement 104600 tons (from NVR, confidence 0.95)"
+
+# Pattern: Multiple claims for same property
+# Example: Two displacement values from NVR and WDQS, both stored as separate claims
+
+# Pattern: Conflict resolution
+# Example: NVR claim marked as preferred for US Navy ships
+
+# ============================================================================
+# ANNOTATIONS
+# ============================================================================
+
+# Link to PROV-O documentation
+ship:Claim rdfs:seeAlso <https://www.w3.org/TR/prov-o/#Entity> .
+ship:DataSource rdfs:seeAlso <https://www.w3.org/TR/prov-o/#Agent> .
+ship:ExtractionActivity rdfs:seeAlso <https://www.w3.org/TR/prov-o/#Activity> .
+
+# ============================================================================
+# EXAMPLE DATA SOURCES
+# ============================================================================
+
+ship-entity:source/NVR a ship:DataSource ;
+    rdfs:label "Navy Vessel Register (NVR)"@en ;
+    ship:sourceURL <https://www.navsea.navy.mil> ;
+    ship:authorityLevel "authoritative" ;
+    rdfs:comment "Authoritative source for US Navy vessel inventory and lifecycle data."@en .
+
+ship-entity:source/WDQS a ship:DataSource ;
+    rdfs:label "Wikidata Query Service (WDQS)"@en ;
+    ship:sourceURL <https://query.wikidata.org/sparql> ;
+    ship:authorityLevel "verified" ;
+    rdfs:comment "Public knowledge base export for international naval vessels."@en .
+
+ship-entity:source/CSV a ship:DataSource ;
+    rdfs:label "Messy CSV Data"@en ;
+    ship:authorityLevel "unverified" ;
+    rdfs:comment "Messy table/CSV with data quality issues."@en .
+
+# ============================================================================
+# EXAMPLE EXTRACTION ACTIVITIES
+# ============================================================================
+
+ship-entity:activity/RML_NVR a ship:ExtractionActivity ;
+    rdfs:label "RML Mapping: NVR"@en ;
+    ship:activityType "RML_Mapping" ;
+    ship:activityConfig "mappings/nvr.rml.ttl" ;
+    prov:wasAssociatedWith ship-entity:source/NVR ;
+    prov:startedAtTime "2024-01-15T10:30:00Z"^^xsd:dateTime .
+
+ship-entity:activity/RML_WDQS a ship:ExtractionActivity ;
+    rdfs:label "RML Mapping: WDQS"@en ;
+    ship:activityType "RML_Mapping" ;
+    ship:activityConfig "mappings/wikidata_extract.rml.ttl" ;
+    prov:wasAssociatedWith ship-entity:source/WDQS ;
+    prov:startedAtTime "2024-01-14T08:15:00Z"^^xsd:dateTime .

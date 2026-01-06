@@ -1,0 +1,80 @@
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ship: <https://example.org/ship-ontology/> .
+
+# Navy/Branch Concept Scheme
+# Classification of naval vessels by operating navy or branch
+# Reference: https://www.nvr.navy.mil
+
+ship:navyBranchScheme a skos:ConceptScheme ;
+    skos:prefLabel "Navy and Naval Branch"@en ;
+    skos:definition "Classification of naval vessels by the navy or naval branch that operates them."@en ;
+    dct:source <https://www.nvr.navy.mil> ;
+    dct:modified "2024-01-15"^^xsd:date .
+
+# United States Navy
+ship:unitedStatesNavy a skos:Concept ;
+    skos:inScheme ship:navyBranchScheme ;
+    skos:prefLabel "United States Navy"@en ;
+    skos:altLabel "US Navy"@en ;
+    skos:altLabel "USN"@en ;
+    skos:altLabel "U.S. Navy"@en ;
+    skos:definition "The naval warfare service branch of the United States Armed Forces, responsible for naval operations and maritime security."@en ;
+    skos:note "Primary operator in current dataset. Authoritative data source: Navy Vessel Register (NVR)."@en .
+
+# Royal Navy
+ship:royalNavy a skos:Concept ;
+    skos:inScheme ship:navyBranchScheme ;
+    skos:prefLabel "Royal Navy"@en ;
+    skos:altLabel "RN"@en ;
+    skos:altLabel "British Royal Navy"@en ;
+    skos:definition "The United Kingdom's naval warfare force, responsible for naval operations and maritime defense."@en ;
+    skos:note "Present in dataset (HMS Prince of Wales, HMS Queen Elizabeth)."@en .
+
+# United States Coast Guard (for completeness)
+ship:unitedStatesCoastGuard a skos:Concept ;
+    skos:inScheme ship:navyBranchScheme ;
+    skos:prefLabel "United States Coast Guard"@en ;
+    skos:altLabel "US Coast Guard"@en ;
+    skos:altLabel "USCG"@en ;
+    skos:altLabel "U.S. Coast Guard"@en ;
+    skos:definition "The maritime security, search and rescue, and law enforcement service of the United States, operating under the Department of Homeland Security."@en ;
+    skos:note "Not present in current dataset but included for completeness. May operate naval vessels in certain contexts."@en .
+
+# United States Marine Corps (for completeness)
+ship:unitedStatesMarineCorps a skos:Concept ;
+    skos:inScheme ship:navyBranchScheme ;
+    skos:prefLabel "United States Marine Corps"@en ;
+    skos:altLabel "US Marine Corps"@en ;
+    skos:altLabel "USMC"@en ;
+    skos:altLabel "Marines"@en ;
+    skos:definition "The maritime land force service branch of the United States Armed Forces, operating under the Department of the Navy."@en ;
+    skos:note "Marines operate from naval vessels (amphibious assault ships) but do not typically own vessels. Included for operational context."@en .
+
+# Other Major Navies (for future expansion)
+ship:royalAustralianNavy a skos:Concept ;
+    skos:inScheme ship:navyBranchScheme ;
+    skos:prefLabel "Royal Australian Navy"@en ;
+    skos:altLabel "RAN"@en ;
+    skos:altLabel "Australian Navy"@en ;
+    skos:definition "The naval branch of the Australian Defence Force."@en ;
+    skos:note "Not present in current dataset but included for international coverage."@en .
+
+ship:royalCanadianNavy a skos:Concept ;
+    skos:inScheme ship:navyBranchScheme ;
+    skos:prefLabel "Royal Canadian Navy"@en ;
+    skos:altLabel "RCN"@en ;
+    skos:altLabel "Canadian Navy"@en ;
+    skos:definition "The naval branch of the Canadian Armed Forces."@en ;
+    skos:note "Not present in current dataset but included for international coverage."@en .
+
+ship:japanMaritimeSelfDefenseForce a skos:Concept ;
+    skos:inScheme ship:navyBranchScheme ;
+    skos:prefLabel "Japan Maritime Self-Defense Force"@en ;
+    skos:altLabel "JMSDF"@en ;
+    skos:altLabel "Japanese Navy"@en ;
+    skos:definition "The maritime warfare branch of the Japan Self-Defense Forces."@en ;
+    skos:note "Not present in current dataset but included for international coverage."@en .

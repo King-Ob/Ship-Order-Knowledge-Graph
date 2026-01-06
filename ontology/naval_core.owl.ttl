@@ -1,0 +1,251 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix ship: <https://example.org/ship-ontology/> .
+@prefix ship-entity: <https://example.org/ship-ontology/entity/> .
+
+# Naval Core Ontology
+# OWL 2 ontology for modeling naval vessels, their classes, operators, homeports, and builders
+# Version: 1.0
+# Created: 2024-01-15
+
+ship: a owl:Ontology ;
+    owl:versionInfo "1.0" ;
+    rdfs:comment "Core ontology for naval vessel knowledge graph. Models ships, ship classes, operators, homeports, and builders."@en ;
+    dct:title "Naval Vessel Core Ontology"@en ;
+    dct:description "OWL 2 ontology defining the core entities and relationships for naval vessel data."@en ;
+    dct:created "2024-01-15"^^xsd:date ;
+    dct:modified "2024-01-15"^^xsd:date .
+
+# ============================================================================
+# CLASSES
+# ============================================================================
+
+# Ship Class
+ship:Ship a owl:Class ;
+    rdfs:label "Ship"@en ;
+    rdfs:comment "A naval vessel, warship, or maritime vessel operated by a navy or naval force."@en ;
+    rdfs:subClassOf owl:Thing .
+
+# Ship Class (Design Class)
+ship:ShipClass a owl:Class ;
+    rdfs:label "Ship Class"@en ;
+    rdfs:comment "A design class or class of naval vessels sharing the same basic design, specifications, and construction plans. Examples: Nimitz-class, Arleigh Burke-class."@en ;
+    rdfs:subClassOf owl:Thing .
+
+# Operator/Navy
+ship:Operator a owl:Class ;
+    rdfs:label "Operator"@en ;
+    rdfs:comment "A navy, naval branch, or organization that operates naval vessels. Examples: United States Navy, Royal Navy."@en ;
+    rdfs:subClassOf owl:Thing .
+
+# Homeport
+ship:Homeport a owl:Class ;
+    rdfs:label "Homeport"@en ;
+    rdfs:comment "A naval base, port, or location where a ship is primarily based and from which it operates."@en ;
+    rdfs:subClassOf owl:Thing .
+
+# Builder/Shipyard
+ship:Builder a owl:Class ;
+    rdfs:label "Builder"@en ;
+    rdfs:comment "A shipyard, builder, or construction facility that built or constructed a naval vessel."@en ;
+    rdfs:subClassOf owl:Thing .
+
+# ============================================================================
+# OBJECT PROPERTIES
+# ============================================================================
+
+# hasClass: Ship -> ShipClass
+ship:hasClass a owl:ObjectProperty ;
+    rdfs:label "has class"@en ;
+    rdfs:comment "Relates a ship to its design class. Each ship has exactly one class."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range ship:ShipClass .
+
+# operatedBy: Ship -> Operator
+ship:operatedBy a owl:ObjectProperty ;
+    rdfs:label "operated by"@en ;
+    rdfs:comment "Relates a ship to the navy or organization that operates it. Each ship has exactly one operator."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range ship:Operator .
+
+# homeportedAt: Ship -> Homeport
+ship:homeportedAt a owl:ObjectProperty ;
+    rdfs:label "homeported at"@en ;
+    rdfs:comment "Relates a ship to its homeport or primary base of operations. A ship may have no homeport if decommissioned or unassigned."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range ship:Homeport .
+
+# builtBy: Ship -> Builder
+ship:builtBy a owl:ObjectProperty ;
+    rdfs:label "built by"@en ;
+    rdfs:comment "Relates a ship to the shipyard or builder that constructed it."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range ship:Builder .
+
+# ============================================================================
+# DATA PROPERTIES
+# ============================================================================
+
+# Ship Identification
+ship:hullSymbol a owl:DatatypeProperty ;
+    rdfs:label "hull symbol"@en ;
+    rdfs:comment "The hull classification symbol or pennant number assigned to a ship. Examples: CVN-68, DDG-51, R09."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range xsd:string .
+
+ship:shipName a owl:DatatypeProperty ;
+    rdfs:label "ship name"@en ;
+    rdfs:comment "The official name of the ship. Examples: USS Nimitz, HMS Prince of Wales."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range xsd:string .
+
+ship:imoNumber a owl:DatatypeProperty ;
+    rdfs:label "IMO number"@en ;
+    rdfs:comment "The International Maritime Organization (IMO) ship identification number."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range xsd:string .
+
+ship:mmsi a owl:DatatypeProperty ;
+    rdfs:label "MMSI"@en ;
+    rdfs:comment "The Maritime Mobile Service Identity (MMSI), a 9-digit number used for ship identification."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range xsd:string .
+
+ship:pennantNumber a owl:DatatypeProperty ;
+    rdfs:label "pennant number"@en ;
+    rdfs:comment "The pennant number or hull number assigned to a ship, used especially for international navies."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range xsd:string .
+
+# Ship Lifecycle
+ship:commissionDate a owl:DatatypeProperty ;
+    rdfs:label "commission date"@en ;
+    rdfs:comment "The date on which the ship was officially commissioned into service."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range xsd:date .
+
+ship:decommissionDate a owl:DatatypeProperty ;
+    rdfs:label "decommission date"@en ;
+    rdfs:comment "The date on which the ship was officially decommissioned from service."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range xsd:date .
+
+ship:launchDate a owl:DatatypeProperty ;
+    rdfs:label "launch date"@en ;
+    rdfs:comment "The date on which the ship was launched (entered the water)."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range xsd:date .
+
+# Ship Technical Specifications
+ship:length a owl:DatatypeProperty ;
+    rdfs:label "length"@en ;
+    rdfs:comment "The overall length of the ship in meters."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range xsd:decimal .
+
+ship:waterlineLength a owl:DatatypeProperty ;
+    rdfs:label "waterline length"@en ;
+    rdfs:comment "The length of the ship at the waterline in meters."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range xsd:decimal .
+
+ship:beam a owl:DatatypeProperty ;
+    rdfs:label "beam"@en ;
+    rdfs:comment "The width of the ship at its widest point in meters."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range xsd:decimal .
+
+ship:draft a owl:DatatypeProperty ;
+    rdfs:label "draft"@en ;
+    rdfs:comment "The depth of the ship below the waterline in meters."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range xsd:decimal .
+
+ship:displacementLight a owl:DatatypeProperty ;
+    rdfs:label "displacement (light)"@en ;
+    rdfs:comment "The light displacement of the ship in tons (empty ship)."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range xsd:decimal .
+
+ship:displacementStandard a owl:DatatypeProperty ;
+    rdfs:label "displacement (standard)"@en ;
+    rdfs:comment "The standard displacement of the ship in tons."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range xsd:decimal .
+
+ship:displacementFullLoad a owl:DatatypeProperty ;
+    rdfs:label "displacement (full load)"@en ;
+    rdfs:comment "The full load displacement of the ship in tons."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range xsd:decimal .
+
+ship:crewComplement a owl:DatatypeProperty ;
+    rdfs:label "crew complement"@en ;
+    rdfs:comment "The number of crew members the ship is designed to accommodate."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range xsd:integer .
+
+ship:maxSpeed a owl:DatatypeProperty ;
+    rdfs:label "maximum speed"@en ;
+    rdfs:comment "The maximum speed of the ship in knots."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range xsd:decimal .
+
+ship:propulsionType a owl:DatatypeProperty ;
+    rdfs:label "propulsion type"@en ;
+    rdfs:comment "The type of propulsion system. Examples: Nuclear, Gas Turbine, Conventional."@en ;
+    rdfs:domain ship:Ship ;
+    rdfs:range xsd:string .
+
+# Ship Class Properties
+ship:className a owl:DatatypeProperty ;
+    rdfs:label "class name"@en ;
+    rdfs:comment "The name of the ship class. Examples: Nimitz, Arleigh Burke, Ticonderoga."@en ;
+    rdfs:domain ship:ShipClass ;
+    rdfs:range xsd:string .
+
+# Operator Properties
+ship:operatorName a owl:DatatypeProperty ;
+    rdfs:label "operator name"@en ;
+    rdfs:comment "The name of the navy or organization. Examples: United States Navy, Royal Navy."@en ;
+    rdfs:domain ship:Operator ;
+    rdfs:range xsd:string .
+
+# Homeport Properties
+ship:homeportName a owl:DatatypeProperty ;
+    rdfs:label "homeport name"@en ;
+    rdfs:comment "The name or location of the homeport. Examples: Naval Base San Diego, CA; Portsmouth, UK."@en ;
+    rdfs:domain ship:Homeport ;
+    rdfs:range xsd:string .
+
+ship:homeportLocation a owl:DatatypeProperty ;
+    rdfs:label "homeport location"@en ;
+    rdfs:comment "The geographic location (city, state, country) of the homeport."@en ;
+    rdfs:domain ship:Homeport ;
+    rdfs:range xsd:string .
+
+# Builder Properties
+ship:builderName a owl:DatatypeProperty ;
+    rdfs:label "builder name"@en ;
+    rdfs:comment "The name of the shipyard or builder. Examples: Newport News Shipbuilding, BAE Systems."@en ;
+    rdfs:domain ship:Builder ;
+    rdfs:range xsd:string .
+
+ship:builderLocation a owl:DatatypeProperty ;
+    rdfs:label "builder location"@en ;
+    rdfs:comment "The geographic location of the shipyard or builder."@en ;
+    rdfs:domain ship:Builder ;
+    rdfs:range xsd:string .
+
+# ============================================================================
+# ANNOTATIONS AND METADATA
+# ============================================================================
+
+# Link to SKOS taxonomies
+ship:Ship rdfs:seeAlso <taxonomy/ship_type.skos.ttl> .
+ship:Operator rdfs:seeAlso <taxonomy/navy_branch.skos.ttl> .
+ship:homeportedAt rdfs:seeAlso <taxonomy/theater_fleet.skos.ttl> .

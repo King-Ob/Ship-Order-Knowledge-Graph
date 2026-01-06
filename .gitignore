@@ -1,0 +1,57 @@
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Java compiled files
+*.class
+*.jar
+!rmlmapper.jar
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# OS files
+Thumbs.db
+desktop.ini
+
+# Build outputs
+target/
+build/
+dist/
+*.war
+*.ear
+
+# Fuseki data (if running locally)
+run/
+DB/
+
+# Large data files (optional - uncomment if you don't want to track large files)
+# data/raw/*.json
+# data/raw/*.csv
+# data/rdf/*.ttl

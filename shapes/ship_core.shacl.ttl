@@ -1,0 +1,457 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ship: <https://example.org/ship-ontology/> .
+@prefix ship-entity: <https://example.org/ship-ontology/entity/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+# SHACL Shapes for Naval Vessel Data Quality Validation
+# Shapes Constraint Language (SHACL) validation rules
+# Version: 1.0
+# Created: 2024-01-15
+
+# ============================================================================
+# SHIP CORE SHAPE
+# ============================================================================
+
+ship:ShipShape a sh:NodeShape ;
+    sh:targetClass ship:Ship ;
+    sh:name "Ship Core Validation" ;
+    sh:description "Core validation rules for Ship instances" ;
+    sh:property [
+        sh:path ship:shipName ;
+        sh:name "Ship Name" ;
+        sh:description "Ship must have a name" ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:severity sh:Violation ;
+        sh:message "Ship must have exactly one name (shipName property)" ;
+    ] ;
+    sh:property [
+        sh:path ship:hasClass ;
+        sh:name "Ship Class" ;
+        sh:description "Ship must belong to a class" ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class ship:ShipClass ;
+        sh:severity sh:Violation ;
+        sh:message "Ship must have exactly one class (hasClass property)" ;
+    ] ;
+    sh:property [
+        sh:path ship:operatedBy ;
+        sh:name "Operator" ;
+        sh:description "Ship must have an operator" ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class ship:Operator ;
+        sh:severity sh:Violation ;
+        sh:message "Ship must have exactly one operator (operatedBy property)" ;
+    ] ;
+    sh:property [
+        sh:path ship:commissionDate ;
+        sh:name "Commission Date" ;
+        sh:description "Commission date must be a valid date" ;
+        sh:datatype xsd:date ;
+        sh:severity sh:Violation ;
+        sh:message "Commission date must be a valid xsd:date (YYYY-MM-DD format)" ;
+    ] ;
+    # At least one identifier required
+    sh:property [
+        sh:path ( ship:hullSymbol ship:imoNumber ship:mmsi ship:pennantNumber ) ;
+        sh:name "At Least One Identifier" ;
+        sh:description "Ship must have at least one identifier (hullSymbol, imoNumber, mmsi, or pennantNumber)" ;
+        sh:minCount 1 ;
+        sh:severity sh:Violation ;
+        sh:message "Ship must have at least one identifier: hullSymbol, imoNumber, mmsi, or pennantNumber" ;
+    ] .
+
+# ============================================================================
+# ACTIVE SHIP SHAPE (Stricter Requirements)
+# ============================================================================
+
+ship:ActiveShipShape a sh:NodeShape ;
+    sh:targetClass ship:Ship ;
+    sh:name "Active Ship Validation" ;
+    sh:description "Stricter validation rules for active ships" ;
+    sh:condition [
+        sh:property [
+            sh:path ship:status ;
+            sh:hasValue "Active" ;
+        ]
+    ] ;
+    sh:property [
+        sh:path ship:hasClass ;
+        sh:name "Active Ship Class" ;
+        sh:description "Active ships must have a class" ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class ship:ShipClass ;
+        sh:severity sh:Violation ;
+        sh:message "Active ship must have a class" ;
+    ] ;
+    sh:property [
+        sh:path ship:operatedBy ;
+        sh:name "Active Ship Operator" ;
+        sh:description "Active ships must have an operator" ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class ship:Operator ;
+        sh:severity sh:Violation ;
+        sh:message "Active ship must have an operator" ;
+    ] ;
+    sh:property [
+        sh:path ( ship:hullSymbol ship:imoNumber ship:mmsi ship:pennantNumber ) ;
+        sh:name "Active Ship Identifier" ;
+        sh:description "Active ships must have at least one identifier" ;
+        sh:minCount 1 ;
+        sh:severity sh:Violation ;
+        sh:message "Active ship must have at least one identifier (hullSymbol, imoNumber, mmsi, or pennantNumber)" ;
+    ] ;
+    sh:property [
+        sh:path ship:homeportedAt ;
+        sh:name "Active Ship Homeport" ;
+        sh:description "Active ships should have a homeport (warning if missing)" ;
+        sh:minCount 1 ;
+        sh:severity sh:Warning ;
+        sh:message "Active ship should have a homeport assignment" ;
+    ] .
+
+# ============================================================================
+# IDENTIFIER PATTERN VALIDATION
+# ============================================================================
+
+# Hull Symbol Pattern
+ship:HullSymbolShape a sh:NodeShape ;
+    sh:targetClass ship:Ship ;
+    sh:property [
+        sh:path ship:hullSymbol ;
+        sh:name "Hull Symbol Pattern" ;
+        sh:description "Hull symbol must match standard pattern (e.g., CVN-68, DDG-51, LHA-6)" ;
+        sh:pattern "^[A-Z]{1,4}-[0-9]{1,4}$" ;
+        sh:flags "i" ;
+        sh:severity sh:Violation ;
+        sh:message "Hull symbol must match pattern: 1-4 letters, hyphen, 1-4 numbers (e.g., CVN-68, DDG-51)" ;
+    ] .
+
+# MMSI Pattern (9 digits)
+ship:MMSIShape a sh:NodeShape ;
+    sh:targetClass ship:Ship ;
+    sh:property [
+        sh:path ship:mmsi ;
+        sh:name "MMSI Pattern" ;
+        sh:description "MMSI must be exactly 9 digits" ;
+        sh:pattern "^[0-9]{9}$" ;
+        sh:severity sh:Violation ;
+        sh:message "MMSI must be exactly 9 digits (ITU standard)" ;
+    ] .
+
+# IMO Number Pattern (7 digits)
+ship:IMONumberShape a sh:NodeShape ;
+    sh:targetClass ship:Ship ;
+    sh:property [
+        sh:path ship:imoNumber ;
+        sh:name "IMO Number Pattern" ;
+        sh:description "IMO number must be exactly 7 digits" ;
+        sh:pattern "^[0-9]{7}$" ;
+        sh:severity sh:Violation ;
+        sh:message "IMO number must be exactly 7 digits" ;
+    ] .
+
+# Pennant Number Pattern (flexible for international navies)
+ship:PennantNumberShape a sh:NodeShape ;
+    sh:targetClass ship:Ship ;
+    sh:property [
+        sh:path ship:pennantNumber ;
+        sh:name "Pennant Number Pattern" ;
+        sh:description "Pennant number should match common patterns (e.g., R09, R08, D-123)" ;
+        sh:pattern "^[A-Z0-9]{1,3}[-]?[0-9]{1,4}$" ;
+        sh:flags "i" ;
+        sh:severity sh:Warning ;
+        sh:message "Pennant number should match pattern: 1-3 alphanumeric, optional hyphen, 1-4 numbers" ;
+    ] .
+
+# ============================================================================
+# CONTROLLED VOCABULARY VALIDATION (SKOS)
+# ============================================================================
+
+# Ship Type must be from SKOS taxonomy
+ship:ShipTypeShape a sh:NodeShape ;
+    sh:targetClass ship:Ship ;
+    sh:property [
+        sh:path ship:shipType ;
+        sh:name "Ship Type Vocabulary" ;
+        sh:description "Ship type must be a valid SKOS concept from ship type scheme" ;
+        sh:in (
+            "Aircraft Carrier"
+            "Carrier"
+            "Nuclear-Powered Aircraft Carrier"
+            "Conventional Aircraft Carrier"
+            "Cruiser"
+            "Guided Missile Cruiser"
+            "Destroyer"
+            "Guided Missile Destroyer"
+            "Frigate"
+            "Battleship"
+            "Amphibious Assault Ship"
+            "Submarine"
+            "Attack Submarine"
+            "Nuclear-Powered Attack Submarine"
+            "Surface Combatant"
+        ) ;
+        sh:severity sh:Violation ;
+        sh:message "Ship type must be a valid value from SKOS ship type taxonomy" ;
+    ] .
+
+# Status must be from SKOS taxonomy
+ship:StatusShape a sh:NodeShape ;
+    sh:targetClass ship:Ship ;
+    sh:property [
+        sh:path ship:status ;
+        sh:name "Status Vocabulary" ;
+        sh:description "Status must be a valid SKOS concept from status scheme" ;
+        sh:in (
+            "Active"
+            "In Service"
+            "Commissioned"
+            "Operational"
+            "Reserve"
+            "Reserve Fleet"
+            "In Reserve"
+            "Mothballed"
+            "Decommissioned"
+            "Decom"
+            "Out of Service"
+            "Stricken"
+            "Museum"
+            "Museum Ship"
+            "Preserved"
+            "Memorial"
+            "Under Construction"
+            "Building"
+            "In Build"
+            "Launched"
+            "Scrapped"
+            "Disposed"
+            "Recycled"
+            "Sunk"
+            "Lost"
+            "Transferred"
+        ) ;
+        sh:severity sh:Violation ;
+        sh:message "Status must be a valid value from SKOS status taxonomy" ;
+    ] .
+
+# Operator must be from SKOS taxonomy or valid format
+ship:OperatorShape a sh:NodeShape ;
+    sh:targetClass ship:Operator ;
+    sh:property [
+        sh:path ship:operatorName ;
+        sh:name "Operator Name" ;
+        sh:description "Operator name should be from controlled vocabulary" ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:severity sh:Warning ;
+        sh:message "Operator name should match standard navy names (e.g., United States Navy, Royal Navy)" ;
+    ] .
+
+# ============================================================================
+# DATA TYPE VALIDATION
+# ============================================================================
+
+# Date Validation
+ship:DateShape a sh:NodeShape ;
+    sh:targetClass ship:Ship ;
+    sh:property [
+        sh:path ship:commissionDate ;
+        sh:name "Commission Date Type" ;
+        sh:description "Commission date must be valid xsd:date" ;
+        sh:datatype xsd:date ;
+        sh:severity sh:Violation ;
+        sh:message "Commission date must be valid xsd:date format (YYYY-MM-DD)" ;
+    ] ;
+    sh:property [
+        sh:path ship:decommissionDate ;
+        sh:name "Decommission Date Type" ;
+        sh:description "Decommission date must be valid xsd:date if present" ;
+        sh:datatype xsd:date ;
+        sh:severity sh:Violation ;
+        sh:message "Decommission date must be valid xsd:date format (YYYY-MM-DD)" ;
+    ] ;
+    sh:property [
+        sh:path ship:launchDate ;
+        sh:name "Launch Date Type" ;
+        sh:description "Launch date must be valid xsd:date if present" ;
+        sh:datatype xsd:date ;
+        sh:severity sh:Violation ;
+        sh:message "Launch date must be valid xsd:date format (YYYY-MM-DD)" ;
+    ] .
+
+# Numeric Validation
+ship:NumericShape a sh:NodeShape ;
+    sh:targetClass ship:Ship ;
+    sh:property [
+        sh:path ship:length ;
+        sh:name "Length Type" ;
+        sh:description "Length must be a valid decimal number" ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0.0 ;
+        sh:severity sh:Violation ;
+        sh:message "Length must be a non-negative decimal number (in meters)" ;
+    ] ;
+    sh:property [
+        sh:path ship:beam ;
+        sh:name "Beam Type" ;
+        sh:description "Beam must be a valid decimal number" ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0.0 ;
+        sh:severity sh:Violation ;
+        sh:message "Beam must be a non-negative decimal number (in meters)" ;
+    ] ;
+    sh:property [
+        sh:path ship:draft ;
+        sh:name "Draft Type" ;
+        sh:description "Draft must be a valid decimal number" ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0.0 ;
+        sh:severity sh:Violation ;
+        sh:message "Draft must be a non-negative decimal number (in meters)" ;
+    ] ;
+    sh:property [
+        sh:path ship:crewComplement ;
+        sh:name "Crew Complement Type" ;
+        sh:description "Crew complement must be a valid integer" ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:severity sh:Violation ;
+        sh:message "Crew complement must be a non-negative integer" ;
+    ] .
+
+# ============================================================================
+# LOGICAL CONSTRAINTS
+# ============================================================================
+
+# Decommission date must be after commission date
+ship:DateOrderShape a sh:NodeShape ;
+    sh:targetClass ship:Ship ;
+    sh:sparql [
+        sh:message "Decommission date must be after commission date" ;
+        sh:severity sh:Violation ;
+        sh:select """
+            SELECT $this ?decommissionDate ?commissionDate
+            WHERE {
+                $this ship:decommissionDate ?decommissionDate .
+                $this ship:commissionDate ?commissionDate .
+                FILTER (?decommissionDate <= ?commissionDate)
+            }
+        """ ;
+    ] .
+
+# Launch date should be before commission date
+ship:LaunchBeforeCommissionShape a sh:NodeShape ;
+    sh:targetClass ship:Ship ;
+    sh:sparql [
+        sh:message "Launch date should be before commission date (ships are typically launched before commissioning)" ;
+        sh:severity sh:Warning ;
+        sh:select """
+            SELECT $this ?launchDate ?commissionDate
+            WHERE {
+                $this ship:launchDate ?launchDate .
+                $this ship:commissionDate ?commissionDate .
+                FILTER (?launchDate >= ?commissionDate)
+            }
+        """ ;
+    ] .
+
+# Waterline length should not exceed overall length
+ship:LengthConsistencyShape a sh:NodeShape ;
+    sh:targetClass ship:Ship ;
+    sh:sparql [
+        sh:message "Waterline length cannot exceed overall length (data quality issue)" ;
+        sh:severity sh:Violation ;
+        sh:select """
+            SELECT $this ?waterlineLength ?length
+            WHERE {
+                $this ship:waterlineLength ?waterlineLength .
+                $this ship:length ?length .
+                FILTER (?waterlineLength > ?length)
+            }
+        """ ;
+    ] .
+
+# ============================================================================
+# RELATIONSHIP VALIDATION
+# ============================================================================
+
+# Ship must link to valid ShipClass
+ship:ClassRelationshipShape a sh:NodeShape ;
+    sh:targetClass ship:Ship ;
+    sh:property [
+        sh:path ship:hasClass ;
+        sh:name "Valid Ship Class" ;
+        sh:description "Ship class must be a valid ShipClass instance" ;
+        sh:class ship:ShipClass ;
+        sh:nodeKind sh:IRI ;
+        sh:severity sh:Violation ;
+        sh:message "Ship class must be a valid ShipClass instance (IRI)" ;
+    ] .
+
+# Ship must link to valid Operator
+ship:OperatorRelationshipShape a sh:NodeShape ;
+    sh:targetClass ship:Ship ;
+    sh:property [
+        sh:path ship:operatedBy ;
+        sh:name "Valid Operator" ;
+        sh:description "Operator must be a valid Operator instance" ;
+        sh:class ship:Operator ;
+        sh:nodeKind sh:IRI ;
+        sh:severity sh:Violation ;
+        sh:message "Operator must be a valid Operator instance (IRI)" ;
+    ] .
+
+# Homeport must be valid Homeport instance (if present)
+ship:HomeportRelationshipShape a sh:NodeShape ;
+    sh:targetClass ship:Ship ;
+    sh:property [
+        sh:path ship:homeportedAt ;
+        sh:name "Valid Homeport" ;
+        sh:description "Homeport must be a valid Homeport instance if present" ;
+        sh:class ship:Homeport ;
+        sh:nodeKind sh:IRI ;
+        sh:severity sh:Violation ;
+        sh:message "Homeport must be a valid Homeport instance (IRI) if provided" ;
+    ] .
+
+# ============================================================================
+# DATA QUALITY WARNINGS
+# ============================================================================
+
+# Missing optional but recommended fields
+ship:DataCompletenessShape a sh:NodeShape ;
+    sh:targetClass ship:Ship ;
+    sh:property [
+        sh:path ship:length ;
+        sh:name "Length Completeness" ;
+        sh:description "Length is recommended for data completeness" ;
+        sh:minCount 1 ;
+        sh:severity sh:Info ;
+        sh:message "Length measurement is recommended for complete ship data" ;
+    ] ;
+    sh:property [
+        sh:path ship:displacementFullLoad ;
+        sh:name "Displacement Completeness" ;
+        sh:description "Displacement is recommended for data completeness" ;
+        sh:minCount 1 ;
+        sh:severity sh:Info ;
+        sh:message "Full load displacement is recommended for complete ship data" ;
+    ] .
+
+# ============================================================================
+# SEVERITY LEVELS SUMMARY
+# ============================================================================
+# sh:Violation - Fail: Critical errors that must be fixed
+# sh:Warning - Warn: Issues that should be addressed but don't prevent processing
+# sh:Info - Pass/Info: Recommendations for data completeness

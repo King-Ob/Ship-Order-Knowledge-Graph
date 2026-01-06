@@ -1,0 +1,374 @@
+# Ship Timeline Queries
+# SPARQL queries for generating ship timelines and event sequences
+# Based on WDQS/SPARQL patterns and MediaWiki query service
+
+# Prefix declarations
+PREFIX ship: <https://example.org/ship-ontology/>
+PREFIX ship-entity: <https://example.org/ship-ontology/entity/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+# ============================================================================
+# Query 1: Complete Timeline for a Specific Ship
+# ============================================================================
+# Returns all events for a ship in chronological order
+# Example: Timeline for USS Nimitz (CVN-68)
+
+SELECT ?event ?eventType ?date ?startDate ?endDate ?location ?organization
+WHERE {
+    ship-entity:ship/CVN-68 ship:hasEvent ?event .
+    ?event rdf:type ?eventType .
+    
+    # Get event date (for point-in-time events)
+    OPTIONAL { ?event ship:eventDate ?date . }
+    
+    # Get start/end dates (for duration events)
+    OPTIONAL { ?event ship:eventStartDate ?startDate . }
+    OPTIONAL { ?event ship:eventEndDate ?endDate . }
+    
+    # Get optional location and organization
+    OPTIONAL { ?event ship:eventLocation ?location . }
+    OPTIONAL { ?event ship:eventOrganization ?organization . }
+}
+ORDER BY 
+    COALESCE(?date, ?startDate) ASC
+
+# ============================================================================
+# Query 2: Timeline for Ships with Name Changes
+# ============================================================================
+# Returns ships that have been renamed, showing old and new names
+
+SELECT ?ship ?shipName ?oldName ?newName ?renameDate
+WHERE {
+    ?ship a ship:Ship .
+    ?ship ship:shipName ?shipName .
+    ?ship ship:hasEvent ?renameEvent .
+    ?renameEvent rdf:type ship:Renamed .
+    ?renameEvent ship:oldName ?oldName .
+    ?renameEvent ship:newName ?newName .
+    ?renameEvent ship:eventDate ?renameDate .
+}
+ORDER BY ?renameDate
+
+# ============================================================================
+# Query 3: Timeline for Ships with Reclassifications
+# ============================================================================
+# Returns ships that have been reclassified, showing old and new classifications
+# Example: USS Spruance reclassified from Destroyer to Guided Missile Destroyer
+
+SELECT ?ship ?shipName ?hullSymbol ?oldClassification ?newClassification ?reclassDate
+WHERE {
+    ?ship a ship:Ship .
+    ?ship ship:shipName ?shipName .
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    ?ship ship:hasEvent ?reclassEvent .
+    ?reclassEvent rdf:type ship:Reclassified .
+    ?reclassEvent ship:oldClassification ?oldClassification .
+    ?reclassEvent ship:newClassification ?newClassification .
+    ?reclassEvent ship:eventDate ?reclassDate .
+}
+ORDER BY ?reclassDate
+
+# ============================================================================
+# Query 4: Timeline for Ships with Operator Changes
+# ============================================================================
+# Returns ships that have changed operators (e.g., transferred to another navy)
+
+SELECT ?ship ?shipName ?hullSymbol ?oldOperator ?newOperator ?changeDate
+WHERE {
+    ?ship a ship:Ship .
+    ?ship ship:shipName ?shipName .
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    ?ship ship:hasEvent ?operatorChangeEvent .
+    ?operatorChangeEvent rdf:type ship:OperatorChanged .
+    ?operatorChangeEvent ship:oldOperator ?oldOperator .
+    ?operatorChangeEvent ship:newOperator ?newOperator .
+    ?operatorChangeEvent ship:eventDate ?changeDate .
+}
+ORDER BY ?changeDate
+
+# ============================================================================
+# Query 5: Timeline for Ships with Major Refits
+# ============================================================================
+# Returns ships that have undergone refits, showing refit duration and details
+# Example: USS Nimitz refit in 2001
+
+SELECT ?ship ?shipName ?hullSymbol ?refitType ?refitStart ?refitEnd ?refitDescription ?location
+WHERE {
+    ?ship a ship:Ship .
+    ?ship ship:shipName ?shipName .
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    ?ship ship:hasEvent ?refitEvent .
+    ?refitEvent rdf:type ship:Refit .
+    OPTIONAL { ?refitEvent ship:refitType ?refitType . }
+    OPTIONAL { ?refitEvent ship:eventStartDate ?refitStart . }
+    OPTIONAL { ?refitEvent ship:eventEndDate ?refitEnd . }
+    OPTIONAL { ?refitEvent ship:refitDescription ?refitDescription . }
+    OPTIONAL { ?refitEvent ship:eventLocation ?location . }
+}
+ORDER BY ?refitStart
+
+# ============================================================================
+# Query 6: Complete Lifecycle Timeline for a Ship Class
+# ============================================================================
+# Returns all lifecycle events for all ships in a class
+# Example: Timeline for all Nimitz-class carriers
+
+SELECT ?ship ?shipName ?hullSymbol ?eventType ?date ?startDate ?endDate
+WHERE {
+    ?ship a ship:Ship .
+    ?ship ship:shipName ?shipName .
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    ?ship ship:hasClass ship-entity:class/nimitz .
+    ?ship ship:hasEvent ?event .
+    ?event rdf:type ?eventType .
+    
+    OPTIONAL { ?event ship:eventDate ?date . }
+    OPTIONAL { ?event ship:eventStartDate ?startDate . }
+    OPTIONAL { ?event ship:eventEndDate ?endDate . }
+}
+ORDER BY 
+    ?shipName
+    COALESCE(?date, ?startDate) ASC
+
+# ============================================================================
+# Query 7: Event Timeline with Event Types
+# ============================================================================
+# Returns a chronological timeline with human-readable event type labels
+
+SELECT ?ship ?shipName ?eventTypeLabel ?date ?startDate ?endDate ?location
+WHERE {
+    ?ship a ship:Ship .
+    ?ship ship:shipName ?shipName .
+    ?ship ship:hasEvent ?event .
+    ?event rdf:type ?eventType .
+    ?eventType rdfs:label ?eventTypeLabel .
+    
+    OPTIONAL { ?event ship:eventDate ?date . }
+    OPTIONAL { ?event ship:eventStartDate ?startDate . }
+    OPTIONAL { ?event ship:eventEndDate ?endDate . }
+    OPTIONAL { ?event ship:eventLocation ?location . }
+}
+ORDER BY 
+    ?shipName
+    COALESCE(?date, ?startDate) ASC
+
+# ============================================================================
+# Query 8: Ships Active During a Specific Time Period
+# ============================================================================
+# Returns ships that were active (commissioned but not decommissioned) during a time period
+# Example: Ships active in 1995
+
+SELECT ?ship ?shipName ?hullSymbol ?commissionDate ?decommissionDate
+WHERE {
+    ?ship a ship:Ship .
+    ?ship ship:shipName ?shipName .
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    
+    # Get commission date
+    ?ship ship:hasEvent ?commissionEvent .
+    ?commissionEvent rdf:type ship:Commissioned .
+    ?commissionEvent ship:eventDate ?commissionDate .
+    
+    # Get decommission date (if exists)
+    OPTIONAL {
+        ?ship ship:hasEvent ?decommissionEvent .
+        ?decommissionEvent rdf:type ship:Decommissioned .
+        ?decommissionEvent ship:eventDate ?decommissionDate .
+    }
+    
+    # Filter: commissioned before or during 1995
+    FILTER (?commissionDate <= "1995-12-31"^^xsd:date)
+    
+    # Filter: either not decommissioned, or decommissioned after 1995
+    FILTER (!BOUND(?decommissionDate) || ?decommissionDate > "1995-01-01"^^xsd:date)
+}
+ORDER BY ?commissionDate
+
+# ============================================================================
+# Query 9: Deployment Timeline for a Ship
+# ============================================================================
+# Returns all deployments for a ship with duration and purpose
+
+SELECT ?ship ?shipName ?deploymentArea ?deploymentPurpose ?deployStart ?deployEnd
+WHERE {
+    ?ship a ship:Ship .
+    ?ship ship:shipName ?shipName .
+    ?ship ship:hasEvent ?deploymentEvent .
+    ?deploymentEvent rdf:type ship:Deployment .
+    
+    OPTIONAL { ?deploymentEvent ship:deploymentArea ?deploymentArea . }
+    OPTIONAL { ?deploymentEvent ship:deploymentPurpose ?deploymentPurpose . }
+    OPTIONAL { ?deploymentEvent ship:eventStartDate ?deployStart . }
+    OPTIONAL { ?deploymentEvent ship:eventEndDate ?deployEnd . }
+}
+ORDER BY ?shipName ?deployStart
+
+# ============================================================================
+# Query 10: Chronological Event Sequence for Multiple Ships
+# ============================================================================
+# Returns events for multiple ships in a single chronological timeline
+# Useful for comparing ship lifecycles
+
+SELECT ?ship ?shipName ?hullSymbol ?eventTypeLabel ?eventDate ?startDate ?endDate
+WHERE {
+    VALUES ?ship { 
+        ship-entity:ship/CVN-68 
+        ship-entity:ship/CVN-71 
+        ship-entity:ship/DDG-51 
+    }
+    
+    ?ship ship:shipName ?shipName .
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    ?ship ship:hasEvent ?event .
+    ?event rdf:type ?eventType .
+    ?eventType rdfs:label ?eventTypeLabel .
+    
+    OPTIONAL { ?event ship:eventDate ?eventDate . }
+    OPTIONAL { ?event ship:eventStartDate ?startDate . }
+    OPTIONAL { ?event ship:eventEndDate ?endDate . }
+}
+ORDER BY 
+    COALESCE(?eventDate, ?startDate) ASC
+    ?shipName
+
+# ============================================================================
+# Query 11: Ships with Complex Lifecycles (Multiple Events)
+# ============================================================================
+# Returns ships that have undergone multiple types of events
+# (e.g., renamed, reclassified, and refitted)
+
+SELECT ?ship ?shipName ?hullSymbol 
+       (COUNT(DISTINCT ?event) AS ?eventCount)
+       (GROUP_CONCAT(DISTINCT ?eventTypeLabel; SEPARATOR=", ") AS ?eventTypes)
+WHERE {
+    ?ship a ship:Ship .
+    ?ship ship:shipName ?shipName .
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    ?ship ship:hasEvent ?event .
+    ?event rdf:type ?eventType .
+    ?eventType rdfs:label ?eventTypeLabel .
+}
+GROUP BY ?ship ?shipName ?hullSymbol
+HAVING (COUNT(DISTINCT ?event) >= 3)
+ORDER BY DESC(?eventCount)
+
+# ============================================================================
+# Query 12: Refit Timeline with Details
+# ============================================================================
+# Returns detailed refit information including type, duration, and location
+
+SELECT ?ship ?shipName ?hullSymbol ?refitType ?refitStart ?refitEnd 
+       ?refitDescription ?location ?organization
+       (xsd:integer(?refitEnd - ?refitStart) AS ?refitDurationDays)
+WHERE {
+    ?ship a ship:Ship .
+    ?ship ship:shipName ?shipName .
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    ?ship ship:hasEvent ?refitEvent .
+    ?refitEvent rdf:type ship:Refit .
+    
+    OPTIONAL { ?refitEvent ship:refitType ?refitType . }
+    OPTIONAL { ?refitEvent ship:eventStartDate ?refitStart . }
+    OPTIONAL { ?refitEvent ship:eventEndDate ?refitEnd . }
+    OPTIONAL { ?refitEvent ship:refitDescription ?refitDescription . }
+    OPTIONAL { ?refitEvent ship:eventLocation ?location . }
+    OPTIONAL { ?refitEvent ship:eventOrganization ?organization . }
+    
+    # Only include refits with both start and end dates for duration calculation
+    FILTER (BOUND(?refitStart) && BOUND(?refitEnd))
+}
+ORDER BY ?refitStart
+
+# ============================================================================
+# Query 13: Event Timeline with Provenance
+# ============================================================================
+# Returns events with source information (if available in the graph)
+# Assumes provenance is tracked via dct:source or similar properties
+
+SELECT ?ship ?shipName ?eventTypeLabel ?date ?startDate ?endDate ?source
+WHERE {
+    ?ship a ship:Ship .
+    ?ship ship:shipName ?shipName .
+    ?ship ship:hasEvent ?event .
+    ?event rdf:type ?eventType .
+    ?eventType rdfs:label ?eventTypeLabel .
+    
+    OPTIONAL { ?event ship:eventDate ?date . }
+    OPTIONAL { ?event ship:eventStartDate ?startDate . }
+    OPTIONAL { ?event ship:eventEndDate ?endDate . }
+    OPTIONAL { ?event dct:source ?source . }
+}
+ORDER BY 
+    ?shipName
+    COALESCE(?date, ?startDate) ASC
+
+# ============================================================================
+# Query 14: Ships with Name Changes - Timeline View
+# ============================================================================
+# Shows the progression of name changes for ships that were renamed
+
+SELECT ?ship ?hullSymbol ?oldName ?newName ?renameDate
+       ?currentName
+WHERE {
+    ?ship a ship:Ship .
+    ?ship ship:shipName ?currentName .
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    
+    ?ship ship:hasEvent ?renameEvent .
+    ?renameEvent rdf:type ship:Renamed .
+    ?renameEvent ship:oldName ?oldName .
+    ?renameEvent ship:newName ?newName .
+    ?renameEvent ship:eventDate ?renameDate .
+}
+ORDER BY ?ship ?renameDate
+
+# ============================================================================
+# Query 15: Complete Lifecycle Events for a Ship (Detailed)
+# ============================================================================
+# Returns all events with full details including location and organization
+# Example: Complete timeline for USS Theodore Roosevelt
+
+SELECT ?eventTypeLabel ?date ?startDate ?endDate ?location ?organization
+       ?oldName ?newName
+       ?oldClassification ?newClassification
+       ?oldOperator ?newOperator
+       ?refitType ?refitDescription
+       ?deploymentArea ?deploymentPurpose
+WHERE {
+    ship-entity:ship/CVN-71 ship:hasEvent ?event .
+    ?event rdf:type ?eventType .
+    ?eventType rdfs:label ?eventTypeLabel .
+    
+    # Temporal properties
+    OPTIONAL { ?event ship:eventDate ?date . }
+    OPTIONAL { ?event ship:eventStartDate ?startDate . }
+    OPTIONAL { ?event ship:eventEndDate ?endDate . }
+    
+    # Common properties
+    OPTIONAL { ?event ship:eventLocation ?location . }
+    OPTIONAL { ?event ship:eventOrganization ?organization . }
+    
+    # Renamed event properties
+    OPTIONAL { ?event ship:oldName ?oldName . }
+    OPTIONAL { ?event ship:newName ?newName . }
+    
+    # Reclassified event properties
+    OPTIONAL { ?event ship:oldClassification ?oldClassification . }
+    OPTIONAL { ?event ship:newClassification ?newClassification . }
+    
+    # Operator changed event properties
+    OPTIONAL { ?event ship:oldOperator ?oldOperator . }
+    OPTIONAL { ?event ship:newOperator ?newOperator . }
+    
+    # Refit event properties
+    OPTIONAL { ?event ship:refitType ?refitType . }
+    OPTIONAL { ?event ship:refitDescription ?refitDescription . }
+    
+    # Deployment event properties
+    OPTIONAL { ?event ship:deploymentArea ?deploymentArea . }
+    OPTIONAL { ?event ship:deploymentPurpose ?deploymentPurpose . }
+}
+ORDER BY 
+    COALESCE(?date, ?startDate) ASC

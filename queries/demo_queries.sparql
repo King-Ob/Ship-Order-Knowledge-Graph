@@ -1,0 +1,1490 @@
+# Demo SPARQL Queries for Ship Order Knowledge Graph
+# Presentation-ready queries for demonstrating knowledge graph capabilities
+# Reference: Wikidata Query Service User Manual (https://www.mediawiki.org/wiki/Wikidata_Query_Service/User_Manual)
+
+PREFIX ship: <https://example.org/ship-ontology/>
+PREFIX ship-entity: <https://example.org/ship-ontology/entity/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+# ============================================================================
+# QUERY 1: Active Ships by Navy
+# ============================================================================
+# Returns all active ships grouped by operator/navy
+# Presentation: Shows fleet composition by navy
+
+SELECT ?operatorName ?shipName ?hullSymbol ?class ?homeportName
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:status "Active" ;
+        ship:operatedBy ?operator ;
+        ship:hasClass ?shipClass .
+    
+    ?operator ship:operatorName ?operatorName .
+    ?shipClass ship:className ?class .
+    
+    OPTIONAL {
+        ?ship ship:homeportedAt ?homeport .
+        ?homeport ship:homeportName ?homeportName .
+    }
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+}
+ORDER BY ?operatorName ?shipName
+
+# ============================================================================
+# QUERY 2: Active Ships by Type
+# ============================================================================
+# Returns all active ships grouped by ship type
+# Presentation: Shows distribution of ship types in active fleet
+
+SELECT ?shipType (COUNT(?ship) AS ?count) 
+       (GROUP_CONCAT(DISTINCT ?shipName; SEPARATOR=", ") AS ?ships)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:status "Active" ;
+        ship:shipType ?shipType .
+}
+GROUP BY ?shipType
+ORDER BY DESC(?count)
+
+# ============================================================================
+# QUERY 3: Active Ships by Homeport
+# ============================================================================
+# Returns all active ships grouped by homeport
+# Presentation: Shows geographic distribution of active fleet
+
+SELECT ?homeportName ?homeportLocation ?operatorName 
+       (COUNT(?ship) AS ?shipCount)
+       (GROUP_CONCAT(DISTINCT ?shipName; SEPARATOR=", ") AS ?ships)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:status "Active" ;
+        ship:homeportedAt ?homeport ;
+        ship:operatedBy ?operator .
+    
+    ?homeport ship:homeportName ?homeportName .
+    OPTIONAL { ?homeport ship:homeportLocation ?homeportLocation . }
+    ?operator ship:operatorName ?operatorName .
+}
+GROUP BY ?homeportName ?homeportLocation ?operatorName
+ORDER BY DESC(?shipCount)
+
+# ============================================================================
+# QUERY 4: Class Comparison - Length Ranges
+# ============================================================================
+# Returns length statistics (min, max, avg) for each ship class
+# Presentation: Compare ship classes by size
+
+SELECT ?className 
+       (MIN(?length) AS ?minLength)
+       (MAX(?length) AS ?maxLength)
+       (AVG(?length) AS ?avgLength)
+       (COUNT(?ship) AS ?shipCount)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:hasClass ?shipClass ;
+        ship:length ?length .
+    
+    ?shipClass ship:className ?className .
+}
+GROUP BY ?className
+HAVING (COUNT(?ship) > 0)
+ORDER BY DESC(?avgLength)
+
+# ============================================================================
+# QUERY 5: Class Comparison - Displacement Ranges
+# ============================================================================
+# Returns displacement statistics for each ship class
+# Presentation: Compare ship classes by displacement
+
+SELECT ?className 
+       (MIN(?displacement) AS ?minDisplacement)
+       (MAX(?displacement) AS ?maxDisplacement)
+       (AVG(?displacement) AS ?avgDisplacement)
+       (COUNT(?ship) AS ?shipCount)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:hasClass ?shipClass ;
+        ship:displacementFullLoad ?displacement .
+    
+    ?shipClass ship:className ?className .
+}
+GROUP BY ?className
+HAVING (COUNT(?ship) > 0)
+ORDER BY DESC(?avgDisplacement)
+
+# ============================================================================
+# QUERY 6: Class Comparison - Crew Complement Ranges
+# ============================================================================
+# Returns crew complement statistics for each ship class
+# Presentation: Compare ship classes by crew size
+
+SELECT ?className 
+       (MIN(?crew) AS ?minCrew)
+       (MAX(?crew) AS ?maxCrew)
+       (AVG(?crew) AS ?avgCrew)
+       (COUNT(?ship) AS ?shipCount)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:hasClass ?shipClass ;
+        ship:crewComplement ?crew .
+    
+    ?shipClass ship:className ?className .
+}
+GROUP BY ?className
+HAVING (COUNT(?ship) > 0)
+ORDER BY DESC(?avgCrew)
+
+# ============================================================================
+# QUERY 7: Conflict Report - Displacement Conflicts
+# ============================================================================
+# Returns all ships with conflicting displacement values from different sources
+# Presentation: Shows data quality issues and source conflicts
+
+SELECT ?shipName ?hullSymbol ?property
+       ?value1 ?source1 ?confidence1
+       ?value2 ?source2 ?confidence2
+WHERE {
+    ?claim1 a ship:Claim ;
+        ship:aboutShip ?ship ;
+        ship:assertsProperty ?property ;
+        ship:claimValue ?value1 ;
+        ship:hasSource ?source1 ;
+        ship:confidenceScore ?confidence1 ;
+        ship:conflictsWith ?claim2 .
+    
+    ?claim2 ship:claimValue ?value2 ;
+        ship:hasSource ?source2 ;
+        ship:confidenceScore ?confidence2 .
+    
+    ?ship ship:shipName ?shipName .
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    
+    FILTER (?property = ship:displacementFullLoad)
+    FILTER (?value1 != ?value2)
+}
+ORDER BY ?shipName
+
+# ============================================================================
+# QUERY 8: Conflict Report - Date Conflicts
+# ============================================================================
+# Returns all ships with conflicting commission date values
+# Presentation: Shows temporal data conflicts
+
+SELECT ?shipName ?hullSymbol
+       ?date1 ?source1 ?confidence1
+       ?date2 ?source2 ?confidence2
+WHERE {
+    ?claim1 a ship:Claim ;
+        ship:aboutShip ?ship ;
+        ship:assertsProperty ship:commissionDate ;
+        ship:claimValue ?date1 ;
+        ship:hasSource ?source1 ;
+        ship:confidenceScore ?confidence1 ;
+        ship:conflictsWith ?claim2 .
+    
+    ?claim2 ship:claimValue ?date2 ;
+        ship:hasSource ?source2 ;
+        ship:confidenceScore ?confidence2 .
+    
+    ?ship ship:shipName ?shipName .
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    
+    FILTER (?date1 != ?date2)
+}
+ORDER BY ?shipName
+
+# ============================================================================
+# QUERY 9: Conflict Report - All Conflicts Summary
+# ============================================================================
+# Returns summary of all conflicts by property type
+# Presentation: Overview of data quality issues
+
+SELECT ?property 
+       (COUNT(DISTINCT ?ship) AS ?shipsWithConflicts)
+       (COUNT(?claim1) AS ?totalConflicts)
+WHERE {
+    ?claim1 a ship:Claim ;
+        ship:aboutShip ?ship ;
+        ship:assertsProperty ?property ;
+        ship:conflictsWith ?claim2 .
+}
+GROUP BY ?property
+ORDER BY DESC(?totalConflicts)
+
+# ============================================================================
+# QUERY 10: Lifecycle Timeline - Single Ship
+# ============================================================================
+# Returns complete lifecycle timeline for a specific ship
+# Presentation: Show ship's history from launch to current status
+
+SELECT ?eventType ?date ?startDate ?endDate ?location ?description
+WHERE {
+    ship-entity:ship/CVN-68 ship:hasEvent ?event .
+    ?event rdf:type ?eventType .
+    
+    OPTIONAL { ?event ship:eventDate ?date . }
+    OPTIONAL { ?event ship:eventStartDate ?startDate . }
+    OPTIONAL { ?event ship:eventEndDate ?endDate . }
+    OPTIONAL { ?event ship:eventLocation ?location . }
+    OPTIONAL { ?event ship:refitDescription ?description . }
+    OPTIONAL { ?event ship:deploymentArea ?description . }
+}
+ORDER BY COALESCE(?date, ?startDate)
+
+# ============================================================================
+# QUERY 11: Lifecycle Timeline - Ship Class
+# ============================================================================
+# Returns lifecycle events for all ships in a class
+# Presentation: Compare lifecycle patterns across class
+
+SELECT ?shipName ?hullSymbol ?eventType 
+       ?date ?startDate ?endDate
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:hasClass ship-entity:class/nimitz ;
+        ship:hasEvent ?event .
+    
+    ?event rdf:type ?eventType .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    OPTIONAL { ?event ship:eventDate ?date . }
+    OPTIONAL { ?event ship:eventStartDate ?startDate . }
+    OPTIONAL { ?event ship:eventEndDate ?endDate . }
+}
+ORDER BY ?shipName COALESCE(?date, ?startDate)
+
+# ============================================================================
+# QUERY 12: Active Ships with Full Details
+# ============================================================================
+# Returns comprehensive information about active ships
+# Presentation: Complete ship profiles
+
+SELECT ?shipName ?hullSymbol ?class ?operator ?homeport 
+       ?length ?displacement ?crew ?propulsion ?status
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:status "Active" ;
+        ship:hasClass ?shipClass ;
+        ship:operatedBy ?operator .
+    
+    ?shipClass ship:className ?class .
+    ?operator ship:operatorName ?operator .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    OPTIONAL { 
+        ?ship ship:homeportedAt ?homeport .
+        ?homeport ship:homeportName ?homeport .
+    }
+    OPTIONAL { ?ship ship:length ?length . }
+    OPTIONAL { ?ship ship:displacementFullLoad ?displacement . }
+    OPTIONAL { ?ship ship:crewComplement ?crew . }
+    OPTIONAL { ?ship ship:propulsionType ?propulsion . }
+}
+ORDER BY ?operator ?shipName
+
+# ============================================================================
+# QUERY 13: Source Coverage Report
+# ============================================================================
+# Returns how many ships have data from each source
+# Presentation: Data completeness by source
+
+SELECT ?sourceName 
+       (COUNT(DISTINCT ?ship) AS ?shipsWithData)
+       (COUNT(?claim) AS ?totalClaims)
+       (AVG(?confidence) AS ?avgConfidence)
+WHERE {
+    ?claim a ship:Claim ;
+        ship:aboutShip ?ship ;
+        ship:hasSource ?source ;
+        ship:confidenceScore ?confidence .
+    
+    ?source ship:sourceURL ?sourceURL .
+    BIND(IF(CONTAINS(STR(?sourceURL), "navsea"), "NVR",
+         IF(CONTAINS(STR(?sourceURL), "wikidata"), "WDQS", "Other")) AS ?sourceName)
+}
+GROUP BY ?sourceName
+ORDER BY DESC(?shipsWithData)
+
+# ============================================================================
+# QUERY 14: Ships with Multiple Sources
+# ============================================================================
+# Returns ships that have data from multiple sources
+# Presentation: Shows data integration success
+
+SELECT ?shipName ?hullSymbol 
+       (COUNT(DISTINCT ?source) AS ?sourceCount)
+       (GROUP_CONCAT(DISTINCT ?sourceName; SEPARATOR=", ") AS ?sources)
+WHERE {
+    ?claim a ship:Claim ;
+        ship:aboutShip ?ship ;
+        ship:hasSource ?source .
+    
+    ?ship ship:shipName ?shipName .
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    
+    ?source ship:sourceURL ?sourceURL .
+    BIND(IF(CONTAINS(STR(?sourceURL), "navsea"), "NVR",
+         IF(CONTAINS(STR(?sourceURL), "wikidata"), "WDQS", "Other")) AS ?sourceName)
+}
+GROUP BY ?shipName ?hullSymbol
+HAVING (COUNT(DISTINCT ?source) > 1)
+ORDER BY DESC(?sourceCount) ?shipName
+
+# ============================================================================
+# QUERY 15: Provenance Chain - Why We Believe a Value
+# ============================================================================
+# Returns full provenance chain for a specific ship property
+# Presentation: Demonstrate provenance tracking
+
+SELECT ?shipName ?property ?value ?sourceName ?sourceURL 
+       ?authority ?confidence ?extractedAt ?activityType
+WHERE {
+    ?claim a ship:Claim ;
+        ship:aboutShip ship-entity:ship/CVN-68 ;
+        ship:assertsProperty ship:displacementFullLoad ;
+        ship:claimValue ?value ;
+        ship:hasSource ?source ;
+        ship:confidenceScore ?confidence ;
+        ship:extractedAt ?extractedAt ;
+        ship:extractedBy ?activity .
+    
+    ?ship ship:shipName ?shipName .
+    ?source ship:sourceURL ?sourceURL ;
+        ship:authorityLevel ?authority .
+    ?activity ship:activityType ?activityType .
+    
+    BIND(IF(CONTAINS(STR(?sourceURL), "navsea"), "NVR",
+         IF(CONTAINS(STR(?sourceURL), "wikidata"), "WDQS", "Other")) AS ?sourceName)
+    BIND(ship:displacementFullLoad AS ?property)
+}
+ORDER BY DESC(?confidence)
+
+# ============================================================================
+# QUERY 16: Ship Status Distribution
+# ============================================================================
+# Returns count of ships by status
+# Presentation: Fleet status overview
+
+SELECT ?status (COUNT(?ship) AS ?count)
+       (GROUP_CONCAT(DISTINCT ?shipName; SEPARATOR=", ") AS ?ships)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:status ?status .
+}
+GROUP BY ?status
+ORDER BY DESC(?count)
+
+# ============================================================================
+# QUERY 17: Ships Commissioned by Decade
+# ============================================================================
+# Returns ships grouped by commission decade
+# Presentation: Historical fleet growth
+
+SELECT ?decade (COUNT(?ship) AS ?shipCount)
+       (GROUP_CONCAT(DISTINCT ?shipName; SEPARATOR=", ") AS ?ships)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:commissionDate ?date .
+    
+    BIND(YEAR(?date) AS ?year)
+    BIND(FLOOR(?year / 10) * 10 AS ?decade)
+}
+GROUP BY ?decade
+ORDER BY ?decade
+
+# ============================================================================
+# QUERY 18: Largest Ships by Displacement
+# ============================================================================
+# Returns top 10 ships by displacement
+# Presentation: Largest naval vessels
+
+SELECT ?shipName ?hullSymbol ?class ?operator ?displacement
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:displacementFullLoad ?displacement ;
+        ship:hasClass ?shipClass ;
+        ship:operatedBy ?operator .
+    
+    ?shipClass ship:className ?class .
+    ?operator ship:operatorName ?operator .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+}
+ORDER BY DESC(?displacement)
+LIMIT 10
+
+# ============================================================================
+# QUERY 19: Ships with Refits
+# ============================================================================
+# Returns all ships that have undergone refits
+# Presentation: Modernization and maintenance history
+
+SELECT ?shipName ?hullSymbol ?refitType ?refitStart ?refitEnd 
+       ?refitDescription ?location
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:hasEvent ?refitEvent .
+    
+    ?refitEvent rdf:type ship:Refit .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    OPTIONAL { ?refitEvent ship:refitType ?refitType . }
+    OPTIONAL { ?refitEvent ship:eventStartDate ?refitStart . }
+    OPTIONAL { ?refitEvent ship:eventEndDate ?refitEnd . }
+    OPTIONAL { ?refitEvent ship:refitDescription ?refitDescription . }
+    OPTIONAL { ?refitEvent ship:eventLocation ?location . }
+}
+ORDER BY ?shipName ?refitStart
+
+# ============================================================================
+# QUERY 20: Confidence Score Distribution
+# ============================================================================
+# Returns distribution of confidence scores
+# Presentation: Data quality overview
+
+SELECT 
+    (COUNT(*) AS ?totalClaims)
+    (COUNT(CASE WHEN ?confidence >= 0.9 THEN 1 END) AS ?highConfidence)
+    (COUNT(CASE WHEN ?confidence >= 0.7 AND ?confidence < 0.7 THEN 1 END) AS ?mediumConfidence)
+    (COUNT(CASE WHEN ?confidence < 0.7 THEN 1 END) AS ?lowConfidence)
+    (AVG(?confidence) AS ?avgConfidence)
+WHERE {
+    ?claim a ship:Claim ;
+        ship:confidenceScore ?confidence .
+}
+
+# ============================================================================
+# QUERY 21: Active Ships by Propulsion Type
+# ============================================================================
+# Returns active ships grouped by propulsion type
+# Presentation: Fleet propulsion composition
+
+SELECT ?propulsionType (COUNT(?ship) AS ?count)
+       (GROUP_CONCAT(DISTINCT ?shipName; SEPARATOR=", ") AS ?ships)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:status "Active" ;
+        ship:propulsionType ?propulsionType .
+}
+GROUP BY ?propulsionType
+ORDER BY DESC(?count)
+
+# ============================================================================
+# QUERY 22: Ships by Operator and Status
+# ============================================================================
+# Returns ships grouped by operator and status
+# Presentation: Fleet status by navy
+
+SELECT ?operatorName ?status (COUNT(?ship) AS ?count)
+       (GROUP_CONCAT(DISTINCT ?shipName; SEPARATOR=", ") AS ?ships)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:status ?status ;
+        ship:operatedBy ?operator .
+    
+    ?operator ship:operatorName ?operatorName .
+}
+GROUP BY ?operatorName ?status
+ORDER BY ?operatorName ?status
+
+# ============================================================================
+# QUERY 23: Active Ships with Technical Specifications
+# ============================================================================
+# Returns active ships with complete technical specs
+# Presentation: Technical comparison
+
+SELECT ?shipName ?hullSymbol ?class ?length ?beam ?draft 
+       ?displacement ?crew ?maxSpeed ?propulsion
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:status "Active" ;
+        ship:hasClass ?shipClass .
+    
+    ?shipClass ship:className ?class .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    OPTIONAL { ?ship ship:length ?length . }
+    OPTIONAL { ?ship ship:beam ?beam . }
+    OPTIONAL { ?ship ship:draft ?draft . }
+    OPTIONAL { ?ship ship:displacementFullLoad ?displacement . }
+    OPTIONAL { ?ship ship:crewComplement ?crew . }
+    OPTIONAL { ?ship ship:maxSpeed ?maxSpeed . }
+    OPTIONAL { ?ship ship:propulsionType ?propulsion . }
+}
+ORDER BY ?shipName
+
+# ============================================================================
+# QUERY 24: Class Comparison - Beam Ranges
+# ============================================================================
+# Returns beam (width) statistics for each ship class
+# Presentation: Compare ship classes by width
+
+SELECT ?className 
+       (MIN(?beam) AS ?minBeam)
+       (MAX(?beam) AS ?maxBeam)
+       (AVG(?beam) AS ?avgBeam)
+       (COUNT(?ship) AS ?shipCount)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:hasClass ?shipClass ;
+        ship:beam ?beam .
+    
+    ?shipClass ship:className ?className .
+}
+GROUP BY ?className
+HAVING (COUNT(?ship) > 0)
+ORDER BY DESC(?avgBeam)
+
+# ============================================================================
+# QUERY 25: Class Comparison - Draft Ranges
+# ============================================================================
+# Returns draft (depth) statistics for each ship class
+# Presentation: Compare ship classes by draft
+
+SELECT ?className 
+       (MIN(?draft) AS ?minDraft)
+       (MAX(?draft) AS ?maxDraft)
+       (AVG(?draft) AS ?avgDraft)
+       (COUNT(?ship) AS ?shipCount)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:hasClass ?shipClass ;
+        ship:draft ?draft .
+    
+    ?shipClass ship:className ?className .
+}
+GROUP BY ?className
+HAVING (COUNT(?ship) > 0)
+ORDER BY DESC(?avgDraft)
+
+# ============================================================================
+# QUERY 26: Class Comparison - Speed Ranges
+# ============================================================================
+# Returns maximum speed statistics for each ship class
+# Presentation: Compare ship classes by speed
+
+SELECT ?className 
+       (MIN(?speed) AS ?minSpeed)
+       (MAX(?speed) AS ?maxSpeed)
+       (AVG(?speed) AS ?avgSpeed)
+       (COUNT(?ship) AS ?shipCount)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:hasClass ?shipClass ;
+        ship:maxSpeed ?speed .
+    
+    ?shipClass ship:className ?className .
+}
+GROUP BY ?className
+HAVING (COUNT(?ship) > 0)
+ORDER BY DESC(?avgSpeed)
+
+# ============================================================================
+# QUERY 27: Class Comparison - All Metrics Summary
+# ============================================================================
+# Returns comprehensive statistics for each ship class
+# Presentation: Complete class comparison
+
+SELECT ?className 
+       (AVG(?length) AS ?avgLength)
+       (AVG(?displacement) AS ?avgDisplacement)
+       (AVG(?crew) AS ?avgCrew)
+       (AVG(?speed) AS ?avgSpeed)
+       (COUNT(?ship) AS ?shipCount)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:hasClass ?shipClass .
+    
+    ?shipClass ship:className ?className .
+    
+    OPTIONAL { ?ship ship:length ?length . }
+    OPTIONAL { ?ship ship:displacementFullLoad ?displacement . }
+    OPTIONAL { ?ship ship:crewComplement ?crew . }
+    OPTIONAL { ?ship ship:maxSpeed ?speed . }
+}
+GROUP BY ?className
+HAVING (COUNT(?ship) > 0)
+ORDER BY DESC(?avgDisplacement)
+
+# ============================================================================
+# QUERY 28: Conflict Report - Length Conflicts
+# ============================================================================
+# Returns all ships with conflicting length values
+# Presentation: Shows length measurement conflicts
+
+SELECT ?shipName ?hullSymbol
+       ?length1 ?source1 ?confidence1
+       ?length2 ?source2 ?confidence2
+WHERE {
+    ?claim1 a ship:Claim ;
+        ship:aboutShip ?ship ;
+        ship:assertsProperty ship:length ;
+        ship:claimValue ?length1 ;
+        ship:hasSource ?source1 ;
+        ship:confidenceScore ?confidence1 ;
+        ship:conflictsWith ?claim2 .
+    
+    ?claim2 ship:claimValue ?length2 ;
+        ship:hasSource ?source2 ;
+        ship:confidenceScore ?confidence2 .
+    
+    ?ship ship:shipName ?shipName .
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    
+    FILTER (?length1 != ?length2)
+}
+ORDER BY ?shipName
+
+# ============================================================================
+# QUERY 29: Conflict Report - Crew Complement Conflicts
+# ============================================================================
+# Returns all ships with conflicting crew complement values
+# Presentation: Shows crew size conflicts
+
+SELECT ?shipName ?hullSymbol
+       ?crew1 ?source1 ?confidence1
+       ?crew2 ?source2 ?confidence2
+WHERE {
+    ?claim1 a ship:Claim ;
+        ship:aboutShip ?ship ;
+        ship:assertsProperty ship:crewComplement ;
+        ship:claimValue ?crew1 ;
+        ship:hasSource ?source1 ;
+        ship:confidenceScore ?confidence1 ;
+        ship:conflictsWith ?claim2 .
+    
+    ?claim2 ship:claimValue ?crew2 ;
+        ship:hasSource ?source2 ;
+        ship:confidenceScore ?confidence2 .
+    
+    ?ship ship:shipName ?shipName .
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    
+    FILTER (?crew1 != ?crew2)
+}
+ORDER BY ?shipName
+
+# ============================================================================
+# QUERY 30: Conflict Report - Name Conflicts
+# ============================================================================
+# Returns all ships with conflicting name values
+# Presentation: Shows name variation conflicts
+
+SELECT ?shipName ?hullSymbol
+       ?name1 ?source1 ?confidence1
+       ?name2 ?source2 ?confidence2
+WHERE {
+    ?claim1 a ship:Claim ;
+        ship:aboutShip ?ship ;
+        ship:assertsProperty ship:shipName ;
+        ship:claimValue ?name1 ;
+        ship:hasSource ?source1 ;
+        ship:confidenceScore ?confidence1 ;
+        ship:conflictsWith ?claim2 .
+    
+    ?claim2 ship:claimValue ?name2 ;
+        ship:hasSource ?source2 ;
+        ship:confidenceScore ?confidence2 .
+    
+    ?ship ship:shipName ?shipName .
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    
+    FILTER (?name1 != ?name2)
+}
+ORDER BY ?shipName
+
+# ============================================================================
+# QUERY 31: Conflict Report - Class Conflicts
+# ============================================================================
+# Returns all ships with conflicting class assignments
+# Presentation: Shows classification conflicts
+
+SELECT ?shipName ?hullSymbol
+       ?class1 ?source1 ?confidence1
+       ?class2 ?source2 ?confidence2
+WHERE {
+    ?claim1 a ship:Claim ;
+        ship:aboutShip ?ship ;
+        ship:assertsProperty ship:hasClass ;
+        ship:claimValue ?class1 ;
+        ship:hasSource ?source1 ;
+        ship:confidenceScore ?confidence1 ;
+        ship:conflictsWith ?claim2 .
+    
+    ?claim2 ship:claimValue ?class2 ;
+        ship:hasSource ?source2 ;
+        ship:confidenceScore ?confidence2 .
+    
+    ?ship ship:shipName ?shipName .
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    
+    FILTER (?class1 != ?class2)
+}
+ORDER BY ?shipName
+
+# ============================================================================
+# QUERY 32: Conflict Report - Status Conflicts
+# ============================================================================
+# Returns all ships with conflicting status values
+# Presentation: Shows status conflicts (critical for operational awareness)
+
+SELECT ?shipName ?hullSymbol
+       ?status1 ?source1 ?confidence1
+       ?status2 ?source2 ?confidence2
+WHERE {
+    ?claim1 a ship:Claim ;
+        ship:aboutShip ?ship ;
+        ship:assertsProperty ship:status ;
+        ship:claimValue ?status1 ;
+        ship:hasSource ?source1 ;
+        ship:confidenceScore ?confidence1 ;
+        ship:conflictsWith ?claim2 .
+    
+    ?claim2 ship:claimValue ?status2 ;
+        ship:hasSource ?source2 ;
+        ship:confidenceScore ?confidence2 .
+    
+    ?ship ship:shipName ?shipName .
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    
+    FILTER (?status1 != ?status2)
+}
+ORDER BY ?shipName
+
+# ============================================================================
+# QUERY 33: Conflict Report - Homeport Conflicts
+# ============================================================================
+# Returns all ships with conflicting homeport assignments
+# Presentation: Shows location conflicts
+
+SELECT ?shipName ?hullSymbol
+       ?homeport1 ?source1 ?confidence1
+       ?homeport2 ?source2 ?confidence2
+WHERE {
+    ?claim1 a ship:Claim ;
+        ship:aboutShip ?ship ;
+        ship:assertsProperty ship:homeportedAt ;
+        ship:claimValue ?homeport1 ;
+        ship:hasSource ?source1 ;
+        ship:confidenceScore ?confidence1 ;
+        ship:conflictsWith ?claim2 .
+    
+    ?claim2 ship:claimValue ?homeport2 ;
+        ship:hasSource ?source2 ;
+        ship:confidenceScore ?confidence2 .
+    
+    ?ship ship:shipName ?shipName .
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    
+    FILTER (?homeport1 != ?homeport2)
+}
+ORDER BY ?shipName
+
+# ============================================================================
+# QUERY 34: Conflict Report - Preferred vs Non-Preferred Claims
+# ============================================================================
+# Returns summary of preferred vs non-preferred claims in conflicts
+# Presentation: Shows conflict resolution effectiveness
+
+SELECT 
+    (COUNT(DISTINCT ?preferredClaim) AS ?preferredCount)
+    (COUNT(DISTINCT ?nonPreferredClaim) AS ?nonPreferredCount)
+    (AVG(?preferredConfidence) AS ?avgPreferredConfidence)
+    (AVG(?nonPreferredConfidence) AS ?avgNonPreferredConfidence)
+WHERE {
+    ?preferredClaim a ship:Claim ;
+        ship:isPreferred true ;
+        ship:confidenceScore ?preferredConfidence ;
+        ship:conflictsWith ?nonPreferredClaim .
+    
+    ?nonPreferredClaim ship:isPreferred false ;
+        ship:confidenceScore ?nonPreferredConfidence .
+}
+
+# ============================================================================
+# QUERY 35: Lifecycle Timeline - All Ships with Events
+# ============================================================================
+# Returns all ships that have lifecycle events
+# Presentation: Shows which ships have complete lifecycle data
+
+SELECT ?shipName ?hullSymbol 
+       (COUNT(?event) AS ?eventCount)
+       (GROUP_CONCAT(DISTINCT ?eventTypeLabel; SEPARATOR=", ") AS ?eventTypes)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:hasEvent ?event .
+    
+    ?event rdf:type ?eventType .
+    ?eventType rdfs:label ?eventTypeLabel .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+}
+GROUP BY ?shipName ?hullSymbol
+ORDER BY DESC(?eventCount)
+
+# ============================================================================
+# QUERY 36: Lifecycle Timeline - Commission Events Only
+# ============================================================================
+# Returns all commission events
+# Presentation: Fleet commissioning history
+
+SELECT ?shipName ?hullSymbol ?class ?operator ?commissionDate
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:hasEvent ?commissionEvent .
+    
+    ?commissionEvent rdf:type ship:Commissioned ;
+        ship:eventDate ?commissionDate .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    OPTIONAL {
+        ?ship ship:hasClass ?shipClass .
+        ?shipClass ship:className ?class .
+    }
+    OPTIONAL {
+        ?ship ship:operatedBy ?operator .
+        ?operator ship:operatorName ?operator .
+    }
+}
+ORDER BY ?commissionDate
+
+# ============================================================================
+# QUERY 37: Lifecycle Timeline - Decommission Events Only
+# ============================================================================
+# Returns all decommission events
+# Presentation: Fleet decommissioning history
+
+SELECT ?shipName ?hullSymbol ?class ?operator ?decommissionDate ?status
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:hasEvent ?decommissionEvent .
+    
+    ?decommissionEvent rdf:type ship:Decommissioned ;
+        ship:eventDate ?decommissionDate .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    OPTIONAL { ?ship ship:status ?status . }
+    OPTIONAL {
+        ?ship ship:hasClass ?shipClass .
+        ?shipClass ship:className ?class .
+    }
+    OPTIONAL {
+        ?ship ship:operatedBy ?operator .
+        ?operator ship:operatorName ?operator .
+    }
+}
+ORDER BY ?decommissionDate
+
+# ============================================================================
+# QUERY 38: Lifecycle Timeline - Launch Events
+# ============================================================================
+# Returns all launch events
+# Presentation: Ship launch history
+
+SELECT ?shipName ?hullSymbol ?class ?launchDate ?location
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:hasEvent ?launchEvent .
+    
+    ?launchEvent rdf:type ship:Launched ;
+        ship:eventDate ?launchDate .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    OPTIONAL {
+        ?ship ship:hasClass ?shipClass .
+        ?shipClass ship:className ?class .
+    }
+    OPTIONAL { ?launchEvent ship:eventLocation ?location . }
+}
+ORDER BY ?launchDate
+
+# ============================================================================
+# QUERY 39: Lifecycle Timeline - Refit Events Summary
+# ============================================================================
+# Returns summary of all refit events
+# Presentation: Modernization activity overview
+
+SELECT ?shipName ?hullSymbol 
+       (COUNT(?refit) AS ?refitCount)
+       (MIN(?refitStart) AS ?firstRefit)
+       (MAX(?refitEnd) AS ?lastRefit)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:hasEvent ?refit .
+    
+    ?refit rdf:type ship:Refit .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    OPTIONAL { ?refit ship:eventStartDate ?refitStart . }
+    OPTIONAL { ?refit ship:eventEndDate ?refitEnd . }
+}
+GROUP BY ?shipName ?hullSymbol
+HAVING (COUNT(?refit) > 0)
+ORDER BY DESC(?refitCount)
+
+# ============================================================================
+# QUERY 40: Lifecycle Timeline - Renamed Ships
+# ============================================================================
+# Returns all ships that have been renamed
+# Presentation: Name change history
+
+SELECT ?shipName ?hullSymbol ?oldName ?newName ?renameDate
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:hasEvent ?renameEvent .
+    
+    ?renameEvent rdf:type ship:Renamed ;
+        ship:oldName ?oldName ;
+        ship:newName ?newName ;
+        ship:eventDate ?renameDate .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+}
+ORDER BY ?renameDate
+
+# ============================================================================
+# QUERY 41: Lifecycle Timeline - Reclassified Ships
+# ============================================================================
+# Returns all ships that have been reclassified
+# Presentation: Classification change history
+
+SELECT ?shipName ?hullSymbol ?oldClassification ?newClassification ?reclassDate
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:hasEvent ?reclassEvent .
+    
+    ?reclassEvent rdf:type ship:Reclassified ;
+        ship:oldClassification ?oldClassification ;
+        ship:newClassification ?newClassification ;
+        ship:eventDate ?reclassDate .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+}
+ORDER BY ?reclassDate
+
+# ============================================================================
+# QUERY 42: Lifecycle Timeline - Ships Active in Specific Year
+# ============================================================================
+# Returns ships that were active during a specific year
+# Presentation: Historical fleet snapshot
+
+SELECT ?shipName ?hullSymbol ?class ?operator ?commissionDate ?decommissionDate
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:hasEvent ?commissionEvent .
+    
+    ?commissionEvent rdf:type ship:Commissioned ;
+        ship:eventDate ?commissionDate .
+    
+    OPTIONAL {
+        ?ship ship:hasEvent ?decommissionEvent .
+        ?decommissionEvent rdf:type ship:Decommissioned ;
+            ship:eventDate ?decommissionDate .
+    }
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    OPTIONAL {
+        ?ship ship:hasClass ?shipClass .
+        ?shipClass ship:className ?class .
+    }
+    OPTIONAL {
+        ?ship ship:operatedBy ?operator .
+        ?operator ship:operatorName ?operator .
+    }
+    
+    # Filter: commissioned before or during 1995
+    FILTER (YEAR(?commissionDate) <= 1995)
+    
+    # Filter: either not decommissioned, or decommissioned after 1995
+    FILTER (!BOUND(?decommissionDate) || YEAR(?decommissionDate) > 1995)
+}
+ORDER BY ?commissionDate
+
+# ============================================================================
+# QUERY 43: Lifecycle Timeline - Event Types Distribution
+# ============================================================================
+# Returns count of each event type
+# Presentation: Event type overview
+
+SELECT ?eventTypeLabel (COUNT(?event) AS ?eventCount)
+       (COUNT(DISTINCT ?ship) AS ?shipsWithEvent)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:hasEvent ?event .
+    
+    ?event rdf:type ?eventType .
+    ?eventType rdfs:label ?eventTypeLabel .
+}
+GROUP BY ?eventTypeLabel
+ORDER BY DESC(?eventCount)
+
+# ============================================================================
+# QUERY 44: Provenance - All Claims for a Ship
+# ============================================================================
+# Returns all claims (with provenance) for a specific ship
+# Presentation: Complete provenance view
+
+SELECT ?property ?value ?sourceName ?sourceURL ?authority 
+       ?confidence ?extractedAt ?activityType
+WHERE {
+    ?claim a ship:Claim ;
+        ship:aboutShip ship-entity:ship/CVN-68 ;
+        ship:assertsProperty ?property ;
+        ship:claimValue ?value ;
+        ship:hasSource ?source ;
+        ship:confidenceScore ?confidence ;
+        ship:extractedAt ?extractedAt ;
+        ship:extractedBy ?activity .
+    
+    ?source ship:sourceURL ?sourceURL ;
+        ship:authorityLevel ?authority .
+    ?activity ship:activityType ?activityType .
+    
+    BIND(IF(CONTAINS(STR(?sourceURL), "navsea"), "NVR",
+         IF(CONTAINS(STR(?sourceURL), "wikidata"), "WDQS", "Other")) AS ?sourceName)
+}
+ORDER BY ?property DESC(?confidence)
+
+# ============================================================================
+# QUERY 45: Provenance - Claims by Confidence Level
+# ============================================================================
+# Returns claims grouped by confidence level
+# Presentation: Data quality distribution
+
+SELECT 
+    (COUNT(CASE WHEN ?confidence >= 0.9 THEN 1 END) AS ?highConfidence)
+    (COUNT(CASE WHEN ?confidence >= 0.7 AND ?confidence < 0.9 THEN 1 END) AS ?mediumConfidence)
+    (COUNT(CASE WHEN ?confidence < 0.7 THEN 1 END) AS ?lowConfidence)
+    (COUNT(*) AS ?totalClaims)
+WHERE {
+    ?claim a ship:Claim ;
+        ship:confidenceScore ?confidence .
+}
+
+# ============================================================================
+# QUERY 46: Provenance - Claims by Source Authority
+# ============================================================================
+# Returns claims grouped by source authority level
+# Presentation: Authority distribution
+
+SELECT ?authority (COUNT(?claim) AS ?claimCount)
+       (AVG(?confidence) AS ?avgConfidence)
+WHERE {
+    ?claim a ship:Claim ;
+        ship:hasSource ?source ;
+        ship:confidenceScore ?confidence .
+    
+    ?source ship:authorityLevel ?authority .
+}
+GROUP BY ?authority
+ORDER BY DESC(?claimCount)
+
+# ============================================================================
+# QUERY 47: Provenance - Extraction Activity Summary
+# ============================================================================
+# Returns summary of extraction activities
+# Presentation: Data extraction overview
+
+SELECT ?activityType (COUNT(?claim) AS ?claimCount)
+       (COUNT(DISTINCT ?source) AS ?sourceCount)
+       (AVG(?confidence) AS ?avgConfidence)
+WHERE {
+    ?claim a ship:Claim ;
+        ship:extractedBy ?activity ;
+        ship:hasSource ?source ;
+        ship:confidenceScore ?confidence .
+    
+    ?activity ship:activityType ?activityType .
+}
+GROUP BY ?activityType
+ORDER BY DESC(?claimCount)
+
+# ============================================================================
+# QUERY 48: Data Quality - Missing Required Fields
+# ============================================================================
+# Returns ships missing required fields
+# Presentation: Data completeness issues
+
+SELECT ?shipName ?hullSymbol
+       (IF(BOUND(?name), "✓", "✗") AS ?hasName)
+       (IF(BOUND(?class), "✓", "✗") AS ?hasClass)
+       (IF(BOUND(?operator), "✓", "✗") AS ?hasOperator)
+       (IF(BOUND(?hullSymbol), "✓", "✗") AS ?hasHullSymbol)
+WHERE {
+    ?ship a ship:Ship .
+    
+    OPTIONAL { ?ship ship:shipName ?name . }
+    OPTIONAL { ?ship ship:hasClass ?class . }
+    OPTIONAL { ?ship ship:operatedBy ?operator . }
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    
+    FILTER (!BOUND(?name) || !BOUND(?class) || !BOUND(?operator))
+}
+ORDER BY ?shipName
+
+# ============================================================================
+# QUERY 49: Data Quality - Ships Without Identifiers
+# ============================================================================
+# Returns ships missing all identifiers
+# Presentation: Identification completeness
+
+SELECT ?shipName ?class ?operator
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName .
+    
+    OPTIONAL {
+        ?ship ship:hasClass ?shipClass .
+        ?shipClass ship:className ?class .
+    }
+    OPTIONAL {
+        ?ship ship:operatedBy ?operator .
+        ?operator ship:operatorName ?operator .
+    }
+    
+    # Missing all identifiers
+    FILTER (!BOUND(?hullSymbol) && !BOUND(?imo) && !BOUND(?mmsi) && !BOUND(?pennant))
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    OPTIONAL { ?ship ship:imoNumber ?imo . }
+    OPTIONAL { ?ship ship:mmsi ?mmsi . }
+    OPTIONAL { ?ship ship:pennantNumber ?pennant . }
+}
+ORDER BY ?shipName
+
+# ============================================================================
+# QUERY 50: Data Quality - Incomplete Technical Specifications
+# ============================================================================
+# Returns ships with missing technical specifications
+# Presentation: Technical data completeness
+
+SELECT ?shipName ?hullSymbol
+       (IF(BOUND(?length), "✓", "✗") AS ?hasLength)
+       (IF(BOUND(?displacement), "✓", "✗") AS ?hasDisplacement)
+       (IF(BOUND(?crew), "✓", "✗") AS ?hasCrew)
+       (IF(BOUND(?speed), "✓", "✗") AS ?hasSpeed)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    OPTIONAL { ?ship ship:length ?length . }
+    OPTIONAL { ?ship ship:displacementFullLoad ?displacement . }
+    OPTIONAL { ?ship ship:crewComplement ?crew . }
+    OPTIONAL { ?ship ship:maxSpeed ?speed . }
+    
+    FILTER (!BOUND(?length) || !BOUND(?displacement) || !BOUND(?crew) || !BOUND(?speed))
+}
+ORDER BY ?shipName
+
+# ============================================================================
+# QUERY 51: Temporal Analysis - Ships Commissioned per Year
+# ============================================================================
+# Returns count of ships commissioned per year
+# Presentation: Fleet growth over time
+
+SELECT ?year (COUNT(?ship) AS ?shipCount)
+       (GROUP_CONCAT(DISTINCT ?shipName; SEPARATOR=", ") AS ?ships)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:commissionDate ?date .
+    
+    BIND(YEAR(?date) AS ?year)
+}
+GROUP BY ?year
+ORDER BY ?year
+
+# ============================================================================
+# QUERY 52: Temporal Analysis - Ships Decommissioned per Year
+# ============================================================================
+# Returns count of ships decommissioned per year
+# Presentation: Fleet reduction over time
+
+SELECT ?year (COUNT(?ship) AS ?shipCount)
+       (GROUP_CONCAT(DISTINCT ?shipName; SEPARATOR=", ") AS ?ships)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:decommissionDate ?date .
+    
+    BIND(YEAR(?date) AS ?year)
+}
+GROUP BY ?year
+ORDER BY ?year
+
+# ============================================================================
+# QUERY 53: Temporal Analysis - Service Duration
+# ============================================================================
+# Returns service duration for decommissioned ships
+# Presentation: Ship service life analysis
+
+SELECT ?shipName ?hullSymbol ?class
+       ?commissionDate ?decommissionDate
+       (xsd:integer(?decommissionDate - ?commissionDate) / 365.25 AS ?serviceYears)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:commissionDate ?commissionDate ;
+        ship:decommissionDate ?decommissionDate .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    OPTIONAL {
+        ?ship ship:hasClass ?shipClass .
+        ?shipClass ship:className ?class .
+    }
+}
+ORDER BY DESC(?serviceYears)
+
+# ============================================================================
+# QUERY 54: Temporal Analysis - Active Service Years
+# ============================================================================
+# Returns years of active service for active ships
+# Presentation: Current fleet age analysis
+
+SELECT ?shipName ?hullSymbol ?class ?operator
+       ?commissionDate
+       (YEAR(NOW()) - YEAR(?commissionDate) AS ?activeYears)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:status "Active" ;
+        ship:commissionDate ?commissionDate .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    OPTIONAL {
+        ?ship ship:hasClass ?shipClass .
+        ?shipClass ship:className ?class .
+    }
+    OPTIONAL {
+        ?ship ship:operatedBy ?operator .
+        ?operator ship:operatorName ?operator .
+    }
+}
+ORDER BY DESC(?activeYears)
+
+# ============================================================================
+# QUERY 55: Cross-Source Analysis - NVR vs WDQS Comparison
+# ============================================================================
+# Returns ships with data from both NVR and WDQS
+# Presentation: Data integration success
+
+SELECT ?shipName ?hullSymbol
+       ?nvrDisplacement ?wdqsDisplacement
+       ?nvrLength ?wdqsLength
+       ?nvrCrew ?wdqsCrew
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    
+    # NVR claims
+    OPTIONAL {
+        ?nvrClaim a ship:Claim ;
+            ship:aboutShip ?ship ;
+            ship:hasSource ?nvrSource ;
+            ship:assertsProperty ship:displacementFullLoad ;
+            ship:claimValue ?nvrDisplacement .
+        ?nvrSource ship:sourceURL ?nvrURL .
+        FILTER (CONTAINS(STR(?nvrURL), "navsea"))
+    }
+    
+    OPTIONAL {
+        ?nvrClaim2 a ship:Claim ;
+            ship:aboutShip ?ship ;
+            ship:hasSource ?nvrSource2 ;
+            ship:assertsProperty ship:length ;
+            ship:claimValue ?nvrLength .
+        ?nvrSource2 ship:sourceURL ?nvrURL2 .
+        FILTER (CONTAINS(STR(?nvrURL2), "navsea"))
+    }
+    
+    OPTIONAL {
+        ?nvrClaim3 a ship:Claim ;
+            ship:aboutShip ?ship ;
+            ship:hasSource ?nvrSource3 ;
+            ship:assertsProperty ship:crewComplement ;
+            ship:claimValue ?nvrCrew .
+        ?nvrSource3 ship:sourceURL ?nvrURL3 .
+        FILTER (CONTAINS(STR(?nvrURL3), "navsea"))
+    }
+    
+    # WDQS claims
+    OPTIONAL {
+        ?wdqsClaim a ship:Claim ;
+            ship:aboutShip ?ship ;
+            ship:hasSource ?wdqsSource ;
+            ship:assertsProperty ship:displacementFullLoad ;
+            ship:claimValue ?wdqsDisplacement .
+        ?wdqsSource ship:sourceURL ?wdqsURL .
+        FILTER (CONTAINS(STR(?wdqsURL), "wikidata"))
+    }
+    
+    OPTIONAL {
+        ?wdqsClaim2 a ship:Claim ;
+            ship:aboutShip ?ship ;
+            ship:hasSource ?wdqsSource2 ;
+            ship:assertsProperty ship:length ;
+            ship:claimValue ?wdqsLength .
+        ?wdqsSource2 ship:sourceURL ?wdqsURL2 .
+        FILTER (CONTAINS(STR(?wdqsURL2), "wikidata"))
+    }
+    
+    OPTIONAL {
+        ?wdqsClaim3 a ship:Claim ;
+            ship:aboutShip ?ship ;
+            ship:hasSource ?wdqsSource3 ;
+            ship:assertsProperty ship:crewComplement ;
+            ship:claimValue ?wdqsCrew .
+        ?wdqsSource3 ship:sourceURL ?wdqsURL3 .
+        FILTER (CONTAINS(STR(?wdqsURL3), "wikidata"))
+    }
+    
+    # Must have at least one value from each source
+    FILTER (BOUND(?nvrDisplacement) || BOUND(?nvrLength) || BOUND(?nvrCrew))
+    FILTER (BOUND(?wdqsDisplacement) || BOUND(?wdqsLength) || BOUND(?wdqsCrew))
+}
+ORDER BY ?shipName
+
+# ============================================================================
+# QUERY 56: Aggregation - Total Fleet Displacement
+# ============================================================================
+# Returns total displacement by operator
+# Presentation: Fleet capacity comparison
+
+SELECT ?operatorName 
+       (SUM(?displacement) AS ?totalDisplacement)
+       (COUNT(?ship) AS ?shipCount)
+       (AVG(?displacement) AS ?avgDisplacement)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:status "Active" ;
+        ship:displacementFullLoad ?displacement ;
+        ship:operatedBy ?operator .
+    
+    ?operator ship:operatorName ?operatorName .
+}
+GROUP BY ?operatorName
+ORDER BY DESC(?totalDisplacement)
+
+# ============================================================================
+# QUERY 57: Aggregation - Total Crew Capacity
+# ============================================================================
+# Returns total crew capacity by operator
+# Presentation: Personnel requirements
+
+SELECT ?operatorName 
+       (SUM(?crew) AS ?totalCrew)
+       (COUNT(?ship) AS ?shipCount)
+       (AVG(?crew) AS ?avgCrew)
+WHERE {
+    ?ship a ship:Ship ;
+        ship:status "Active" ;
+        ship:crewComplement ?crew ;
+        ship:operatedBy ?operator .
+    
+    ?operator ship:operatorName ?operatorName .
+}
+GROUP BY ?operatorName
+ORDER BY DESC(?totalCrew)
+
+# ============================================================================
+# QUERY 58: Ranking - Fastest Ships
+# ============================================================================
+# Returns top 10 fastest ships
+# Presentation: Speed comparison
+
+SELECT ?shipName ?hullSymbol ?class ?operator ?maxSpeed
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:maxSpeed ?maxSpeed .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    OPTIONAL {
+        ?ship ship:hasClass ?shipClass .
+        ?shipClass ship:className ?class .
+    }
+    OPTIONAL {
+        ?ship ship:operatedBy ?operator .
+        ?operator ship:operatorName ?operator .
+    }
+}
+ORDER BY DESC(?maxSpeed)
+LIMIT 10
+
+# ============================================================================
+# QUERY 59: Ranking - Longest Ships
+# ============================================================================
+# Returns top 10 longest ships
+# Presentation: Size comparison
+
+SELECT ?shipName ?hullSymbol ?class ?operator ?length
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:length ?length .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    OPTIONAL {
+        ?ship ship:hasClass ?shipClass .
+        ?shipClass ship:className ?class .
+    }
+    OPTIONAL {
+        ?ship ship:operatedBy ?operator .
+        ?operator ship:operatorName ?operator .
+    }
+}
+ORDER BY DESC(?length)
+LIMIT 10
+
+# ============================================================================
+# QUERY 60: Ranking - Ships with Largest Crew
+# ============================================================================
+# Returns top 10 ships by crew complement
+# Presentation: Crew size comparison
+
+SELECT ?shipName ?hullSymbol ?class ?operator ?crew
+WHERE {
+    ?ship a ship:Ship ;
+        ship:shipName ?shipName ;
+        ship:crewComplement ?crew .
+    
+    OPTIONAL { ?ship ship:hullSymbol ?hullSymbol . }
+    OPTIONAL {
+        ?ship ship:hasClass ?shipClass .
+        ?shipClass ship:className ?class .
+    }
+    OPTIONAL {
+        ?ship ship:operatedBy ?operator .
+        ?operator ship:operatorName ?operator .
+    }
+}
+ORDER BY DESC(?crew)
+LIMIT 10

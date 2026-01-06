@@ -1,0 +1,126 @@
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ship: <https://example.org/ship-ontology/> .
+
+# Theater/Fleet Concept Scheme
+# Classification of naval vessels by operational fleet assignment or theater
+# Reference: https://www.nvr.navy.mil
+
+ship:theaterFleetScheme a skos:ConceptScheme ;
+    skos:prefLabel "Theater and Fleet Assignment"@en ;
+    skos:definition "Classification of naval vessels by their operational fleet assignment, theater of operations, or geographic area of responsibility."@en ;
+    dct:source <https://www.nvr.navy.mil> ;
+    dct:modified "2024-01-15"^^xsd:date .
+
+# US Pacific Fleet
+ship:usPacificFleet a skos:Concept ;
+    skos:inScheme ship:theaterFleetScheme ;
+    skos:prefLabel "U.S. Pacific Fleet"@en ;
+    skos:altLabel "US Pacific Fleet"@en ;
+    skos:altLabel "Pacific Fleet"@en ;
+    skos:altLabel "USPACFLT"@en ;
+    skos:definition "The United States Navy fleet responsible for naval operations in the Pacific Ocean, Indian Ocean, and surrounding regions."@en ;
+    skos:note "One of the two numbered fleets of the US Navy. Headquartered at Pearl Harbor, Hawaii. Present in dataset."@en .
+
+# US Atlantic Fleet
+ship:usAtlanticFleet a skos:Concept ;
+    skos:inScheme ship:theaterFleetScheme ;
+    skos:prefLabel "U.S. Atlantic Fleet"@en ;
+    skos:altLabel "US Atlantic Fleet"@en ;
+    skos:altLabel "Atlantic Fleet"@en ;
+    skos:altLabel "USLANTFLT"@en ;
+    skos:definition "The United States Navy fleet responsible for naval operations in the Atlantic Ocean, Mediterranean Sea, and surrounding regions."@en ;
+    skos:note "One of the two numbered fleets of the US Navy. Headquartered at Norfolk, Virginia. Present in dataset."@en .
+
+# US 7th Fleet
+ship:usSeventhFleet a skos:Concept ;
+    skos:inScheme ship:theaterFleetScheme ;
+    skos:broader ship:usPacificFleet ;
+    skos:prefLabel "U.S. 7th Fleet"@en ;
+    skos:altLabel "US 7th Fleet"@en ;
+    skos:altLabel "Seventh Fleet"@en ;
+    skos:altLabel "7th Fleet"@en ;
+    skos:altLabel "U.S. Seventh Fleet"@en ;
+    skos:definition "A numbered fleet of the United States Navy, operating as part of the Pacific Fleet. Responsible for operations in the Western Pacific Ocean, Indian Ocean, and surrounding regions."@en ;
+    skos:note "Headquartered at Yokosuka, Japan. Referenced in competency questions. Subordinate to US Pacific Fleet."@en .
+
+# US 6th Fleet
+ship:usSixthFleet a skos:Concept ;
+    skos:inScheme ship:theaterFleetScheme ;
+    skos:broader ship:usAtlanticFleet ;
+    skos:prefLabel "U.S. 6th Fleet"@en ;
+    skos:altLabel "US 6th Fleet"@en ;
+    skos:altLabel "Sixth Fleet"@en ;
+    skos:altLabel "6th Fleet"@en ;
+    skos:altLabel "U.S. Sixth Fleet"@en ;
+    skos:definition "A numbered fleet of the United States Navy, operating as part of the Atlantic Fleet. Responsible for operations in the Mediterranean Sea and surrounding regions."@en ;
+    skos:note "Headquartered at Naples, Italy. Subordinate to US Atlantic Fleet. Not present in current dataset but included for completeness."@en .
+
+# US 5th Fleet
+ship:usFifthFleet a skos:Concept ;
+    skos:inScheme ship:theaterFleetScheme ;
+    skos:broader ship:usPacificFleet ;
+    skos:prefLabel "U.S. 5th Fleet"@en ;
+    skos:altLabel "US 5th Fleet"@en ;
+    skos:altLabel "Fifth Fleet"@en ;
+    skos:altLabel "5th Fleet"@en ;
+    skos:altLabel "U.S. Fifth Fleet"@en ;
+    skos:definition "A numbered fleet of the United States Navy, operating as part of the Pacific Fleet. Responsible for operations in the Persian Gulf, Red Sea, and surrounding regions."@en ;
+    skos:note "Headquartered at Manama, Bahrain. Subordinate to US Pacific Fleet. Not present in current dataset but included for completeness."@en .
+
+# US 3rd Fleet
+ship:usThirdFleet a skos:Concept ;
+    skos:inScheme ship:theaterFleetScheme ;
+    skos:broader ship:usPacificFleet ;
+    skos:prefLabel "U.S. 3rd Fleet"@en ;
+    skos:altLabel "US 3rd Fleet"@en ;
+    skos:altLabel "Third Fleet"@en ;
+    skos:altLabel "3rd Fleet"@en ;
+    skos:altLabel "U.S. Third Fleet"@en ;
+    skos:definition "A numbered fleet of the United States Navy, operating as part of the Pacific Fleet. Responsible for operations in the Eastern and Northern Pacific Ocean."@en ;
+    skos:note "Headquartered at San Diego, California. Subordinate to US Pacific Fleet. Not present in current dataset but included for completeness."@en .
+
+# US 2nd Fleet
+ship:usSecondFleet a skos:Concept ;
+    skos:inScheme ship:theaterFleetScheme ;
+    skos:broader ship:usAtlanticFleet ;
+    skos:prefLabel "U.S. 2nd Fleet"@en ;
+    skos:altLabel "US 2nd Fleet"@en ;
+    skos:altLabel "Second Fleet"@en ;
+    skos:altLabel "2nd Fleet"@en ;
+    skos:altLabel "U.S. Second Fleet"@en ;
+    skos:definition "A numbered fleet of the United States Navy, operating as part of the Atlantic Fleet. Responsible for operations in the North Atlantic Ocean."@en ;
+    skos:note "Headquartered at Norfolk, Virginia. Subordinate to US Atlantic Fleet. Not present in current dataset but included for completeness."@en .
+
+# US 4th Fleet
+ship:usFourthFleet a skos:Concept ;
+    skos:inScheme ship:theaterFleetScheme ;
+    skos:broader ship:usAtlanticFleet ;
+    skos:prefLabel "U.S. 4th Fleet"@en ;
+    skos:altLabel "US 4th Fleet"@en ;
+    skos:altLabel "Fourth Fleet"@en ;
+    skos:altLabel "4th Fleet"@en ;
+    skos:altLabel "U.S. Fourth Fleet"@en ;
+    skos:definition "A numbered fleet of the United States Navy, operating as part of the Atlantic Fleet. Responsible for operations in the Caribbean Sea, Central America, and South America."@en ;
+    skos:note "Headquartered at Mayport, Florida. Subordinate to US Atlantic Fleet. Not present in current dataset but included for completeness."@en .
+
+# Royal Navy Fleet (for international coverage)
+ship:royalNavyFleet a skos:Concept ;
+    skos:inScheme ship:theaterFleetScheme ;
+    skos:prefLabel "Royal Navy Fleet"@en ;
+    skos:altLabel "RN Fleet"@en ;
+    skos:altLabel "British Fleet"@en ;
+    skos:definition "The operational fleet of the Royal Navy, responsible for naval operations worldwide."@en ;
+    skos:note "Present in dataset (HMS vessels). Royal Navy does not use numbered fleet structure like US Navy."@en .
+
+# Unassigned / No Fleet Assignment
+ship:unassigned a skos:Concept ;
+    skos:inScheme ship:theaterFleetScheme ;
+    skos:prefLabel "Unassigned"@en ;
+    skos:altLabel "No Fleet Assignment"@en ;
+    skos:altLabel "Not Assigned"@en ;
+    skos:definition "Vessel does not have a current fleet assignment, typically due to decommissioned status, museum status, or administrative transfer."@en ;
+    skos:note "Common for decommissioned, museum, or vessels under construction. Fleet assignment is null in NVR for these vessels."@en .

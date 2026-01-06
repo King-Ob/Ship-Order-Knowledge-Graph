@@ -1,0 +1,26 @@
+Ship Name,Hull #,Type,Class,Status,Commission Date,Decom Date,Length (m),Beam (m),Draft (m),Displacement (tons),Crew,Propulsion,Homeport,Notes
+USS Nimitz,CVN-68,Carrier,Nimitz,Active,5/3/1975,,332.8,76.8,11.3,"104,600",3200,Nuclear,"Bremerton, WA",Refit 2001
+USS Theodore Roosevelt,CVN-71,Carrier,Nimitz,Active,10/25/1986,,332.8,76.8,11.3,"104,600",3200,Nuclear,"San Diego, CA",
+USS Arleigh Burke,DDG-51,Destroyer,Arleigh Burke,Active,7/4/1991,,153.9,20.4,9.3,9600,380,Gas Turbine,"Norfolk, VA",
+USS Barry,DDG-52,Destroyer,Arleigh Burke,Active,12/12/1992,,153.9,20.4,9.3,9600,380,Gas Turbine,"Norfolk, VA",
+USS America,LHA-6,Amphibious,America,Active,10/11/2014,,257.3,32.3,8.7,45000,1200,Gas Turbine,"San Diego, CA",
+USS Ticonderoga,CG-47,Cruiser,Ticonderoga,Decommissioned,1/22/1983,9/30/2004,172.8,16.8,9.5,9600,387,Gas Turbine,,Scrapped 2020
+USS Spruance,DD-963,Destroyer,Spruance,Decommissioned,9/20/1975,3/23/2005,171.6,16.8,8.8,8040,296,Gas Turbine,,Reclassified 1998
+USS Midway,CV-41,Carrier,Midway,Museum,9/10/1945,4/11/1992,295.0,34.4,10.5,60000,4104,Conventional,"San Diego, CA",Museum ship
+USS Iowa,BB-61,Battleship,Iowa,Museum,2/22/1943,10/26/1990,270.4,33.0,11.0,57000,2700,Conventional,"Los Angeles, CA",Museum ship
+HMS Prince of Wales,R09,Carrier,Queen Elizabeth,Active,12/10/2019,,280.0,73.0,11.0,72000,1600,Gas Turbine,"Portsmouth, UK",
+HMS Queen Elizabeth,R08,Carrier,Queen Elizabeth,Active,12/7/2017,,280.0,73.0,11.0,72000,1600,Gas Turbine,"Portsmouth, UK",
+USS Los Angeles,SSN-688,Submarine,Los Angeles,Decommissioned,11/13/1976,1/23/2010,109.7,10.1,9.9,6900,133,Nuclear,,Scrapped 2011
+CVN-68,CVN-68,Carrier,Nimitz,Active,1975-05-03,,333,77,11.3,105000,3200,Nuclear,Bremerton,
+Theodore Roosevelt,CVN-71,Aircraft Carrier,Nimitz,Active,1986-10-25,,332.8,76.8,11.3,104600,3200,Nuclear,San Diego,
+Arleigh Burke,DDG-51,Guided Missile Destroyer,Arleigh Burke,Active,1991-07-04,,154,20.4,9.3,9600,380,Gas Turbine,Norfolk,
+DDG-52,DDG-52,Destroyer,Arleigh Burke,Active,1992-12-12,,153.9,20.4,9.3,9600,380,Gas Turbine,Norfolk,
+LHA-6,LHA-6,Amphibious Assault Ship,America,Active,2014-10-11,,257,32,8.7,45000,1200,Gas Turbine,San Diego,
+CG-47,CG-47,Cruiser,Ticonderoga,Decom,1983-01-22,2004-09-30,172.8,16.8,9.5,9600,387,Gas Turbine,,
+DD-963,DD-963,Destroyer,Spruance,Decom,1975-09-20,2005-03-23,171.6,16.8,8.8,8040,296,Gas Turbine,,
+CV-41,CV-41,Carrier,Midway,Museum,1945-09-10,1992-04-11,295,34.4,10.5,60000,4104,Conventional,San Diego,
+BB-61,BB-61,Battleship,Iowa,Museum,1943-02-22,1990-10-26,270.4,33,11,57000,2700,Conventional,Los Angeles,
+Prince of Wales,R09,Carrier,Queen Elizabeth,Active,2019-12-10,,280,73,11,72000,1600,Gas Turbine,Portsmouth,
+Queen Elizabeth,R08,Carrier,Queen Elizabeth,Active,2017-12-07,,280,73,11,72000,1600,Gas Turbine,Portsmouth,
+SSN-688,SSN-688,Submarine,Los Angeles,Decom,1976-11-13,2010-01-23,109.7,10.1,9.9,6900,133,Nuclear,,
+Ship with bad data,CVN-99,Fake Ship,Test,Active,2020-01-01,,350,80,12,50000,5000,Nuclear,Test Port,Waterline length: 400m (ERROR - greater than overall length)

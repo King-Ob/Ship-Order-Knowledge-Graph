@@ -1,0 +1,116 @@
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ship: <https://example.org/ship-ontology/> .
+
+# Mission/Role Concept Scheme
+# Based on US Navy mission categories and hull classification symbol roles
+# Reference: https://www.nvr.navy.mil
+
+ship:missionScheme a skos:ConceptScheme ;
+    skos:prefLabel "Naval Vessel Mission and Role"@en ;
+    skos:definition "Classification of naval vessels by their primary mission, role, and operational capabilities."@en ;
+    dct:source <https://www.nvr.navy.mil> ;
+    dct:modified "2024-01-15"^^xsd:date .
+
+# Power Projection
+ship:powerProjection a skos:Concept ;
+    skos:inScheme ship:missionScheme ;
+    skos:prefLabel "Power Projection"@en ;
+    skos:altLabel "Force Projection"@en ;
+    skos:altLabel "Strike"@en ;
+    skos:definition "The ability to project military power and influence beyond a nation's borders, typically through aircraft carriers and long-range strike capabilities."@en ;
+    skos:note "Primary mission of aircraft carriers (CV/CVN). Enables air superiority and offensive operations."@en .
+
+# Surface Warfare
+ship:surfaceWarfare a skos:Concept ;
+    skos:inScheme ship:missionScheme ;
+    skos:prefLabel "Surface Warfare"@en ;
+    skos:altLabel "SUW"@en ;
+    skos:altLabel "Anti-Surface Warfare"@en ;
+    skos:definition "Combat operations against enemy surface vessels, including ship-to-ship combat and surface target engagement."@en ;
+    skos:note "Primary mission of destroyers (DD/DDG), cruisers (CG), and battleships (BB)."@en .
+
+# Air Defense
+ship:airDefense a skos:Concept ;
+    skos:inScheme ship:missionScheme ;
+    skos:prefLabel "Air Defense"@en ;
+    skos:altLabel "Anti-Air Warfare"@en ;
+    skos:altLabel "AAW"@en ;
+    skos:definition "Defense against airborne threats including aircraft, missiles, and unmanned aerial vehicles."@en ;
+    skos:note "Primary mission of guided missile destroyers (DDG) and guided missile cruisers (CG). Includes Aegis-equipped vessels."@en .
+
+# Anti-Submarine Warfare
+ship:antiSubmarineWarfare a skos:Concept ;
+    skos:inScheme ship:missionScheme ;
+    skos:prefLabel "Anti-Submarine Warfare"@en ;
+    skos:altLabel "ASW"@en ;
+    skos:altLabel "Submarine Warfare"@en ;
+    skos:definition "Detection, tracking, and engagement of enemy submarines using sonar, torpedoes, and anti-submarine aircraft."@en ;
+    skos:note "Primary mission of attack submarines (SSN) and many destroyers (DD/DDG)."@en .
+
+# Amphibious Warfare
+ship:amphibiousWarfare a skos:Concept ;
+    skos:inScheme ship:missionScheme ;
+    skos:prefLabel "Amphibious Warfare"@en ;
+    skos:altLabel "Amphibious Operations"@en ;
+    skos:altLabel "Amphibious Assault"@en ;
+    skos:definition "Operations involving the projection of military power from sea to land, including beach landings and expeditionary warfare."@en ;
+    skos:note "Primary mission of amphibious assault ships (LHA, LHD, LPD). Supports Marine Corps operations."@en .
+
+# Intelligence, Surveillance, and Reconnaissance
+ship:intelligenceSurveillanceReconnaissance a skos:Concept ;
+    skos:inScheme ship:missionScheme ;
+    skos:prefLabel "Intelligence, Surveillance, and Reconnaissance"@en ;
+    skos:altLabel "ISR"@en ;
+    skos:altLabel "Reconnaissance"@en ;
+    skos:altLabel "Intelligence Gathering"@en ;
+    skos:definition "Collection and analysis of information about enemy forces, capabilities, and activities through observation and electronic means."@en ;
+    skos:note "Secondary mission for many vessels, primary for some specialized submarines and aircraft."@en .
+
+# Strategic Deterrence
+ship:strategicDeterrence a skos:Concept ;
+    skos:inScheme ship:missionScheme ;
+    skos:prefLabel "Strategic Deterrence"@en ;
+    skos:altLabel "Nuclear Deterrence"@en ;
+    skos:altLabel "Ballistic Missile Submarine"@en ;
+    skos:definition "Maintenance of nuclear deterrence through ballistic missile submarines capable of second-strike capability."@en ;
+    skos:note "Primary mission of ballistic missile submarines (SSBN). Not present in current dataset but included for completeness."@en .
+
+# Mine Warfare
+ship:mineWarfare a skos:Concept ;
+    skos:inScheme ship:missionScheme ;
+    skos:prefLabel "Mine Warfare"@en ;
+    skos:altLabel "Mine Countermeasures"@en ;
+    skos:altLabel "MCM"@en ;
+    skos:definition "Detection, neutralization, and placement of naval mines in maritime environments."@en ;
+    skos:note "Specialized mission for mine countermeasure vessels (MCM). Not present in current dataset but included for completeness."@en .
+
+# Fleet Support
+ship:fleetSupport a skos:Concept ;
+    skos:inScheme ship:missionScheme ;
+    skos:prefLabel "Fleet Support"@en ;
+    skos:altLabel "Logistics Support"@en ;
+    skos:altLabel "Auxiliary Support"@en ;
+    skos:definition "Provision of logistics, supply, repair, and other support services to combatant vessels and naval operations."@en ;
+    skos:note "Primary mission of auxiliary ships including oilers, supply ships, and repair vessels."@en .
+
+# Multi-Mission
+ship:multiMission a skos:Concept ;
+    skos:inScheme ship:missionScheme ;
+    skos:prefLabel "Multi-Mission"@en ;
+    skos:altLabel "Multi-Role"@en ;
+    skos:altLabel "Versatile"@en ;
+    skos:definition "Capable of performing multiple mission types, typically combining surface warfare, air defense, and anti-submarine warfare capabilities."@en ;
+    skos:note "Modern destroyers (DDG) and cruisers (CG) are typically multi-mission platforms."@en .
+
+# Escort
+ship:escort a skos:Concept ;
+    skos:inScheme ship:missionScheme ;
+    skos:prefLabel "Escort"@en ;
+    skos:altLabel "Convoy Escort"@en ;
+    skos:altLabel "Protection"@en ;
+    skos:definition "Protection of larger vessels, convoys, or task forces from enemy threats."@en ;
+    skos:note "Traditional role of destroyers and frigates. Modern destroyers continue this role while adding offensive capabilities."@en .
