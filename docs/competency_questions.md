@@ -20,7 +20,7 @@
 
 ## Technical Specification and Comparision Question
 
-13. Waht is the average Full Load Displacement of all ship in the Arleigh Burke class?
+13. What is the average Full Load Displacement of all ship in the Arleigh Burke class?
 14. List all ships with a Length greater than 300 meters, ordered by thier commissioning data
 15. which ship class has the largest complement(crew size) in the Royal Navy?
 16. Find shop where the 'waterline lenght' is recorded as greater than the overall length'
