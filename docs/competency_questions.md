@@ -1,5 +1,5 @@
 #ship Competncy Question
-### purpose: These question define the functional requirements for our build.
+## purpose: These question define the functional requirements for our build.
 
 #  Structural/Classification Questions.
 ### These ensure our skos taxonomy and OWL classes are correctly linked.
