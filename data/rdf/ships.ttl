@@ -1,0 +1,247 @@
+@prefix ship: <https://example.org/ship-ontology/> .
+@prefix ship-entity: <https://example.org/ship-ontology/entity/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+
+ship-entity:ship-CVN-68 a ship:Ship ;
+    ship:shipName "USS Nimitz" ;
+    ship:hullSymbol "CVN-68" ;
+    ship:pennantNumber "CVN-68" ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/nimitz> ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/USN> ;
+    ship:homeportedAt <https://example.org/ship-ontology/entity/homeport/naval-base-kitsap-bremerton-wa> ;
+    ship:hasShipType <https://example.org/ship-ontology/entity/ship-type/aircraft-carrier> ;
+    ship:hasStatus <https://example.org/ship-ontology/entity/status/active> ;
+    ship:commissionDate "1975-05-03"^^xsd:date ;
+    ship:launchDate "1972-05-13"^^xsd:date ;
+    ship:length "332.8"^^xsd:decimal ;
+    ship:waterlineLength "317.0"^^xsd:decimal ;
+    ship:beam "76.8"^^xsd:decimal ;
+    ship:draft "11.3"^^xsd:decimal ;
+    ship:displacementFullLoad "104600"^^xsd:decimal ;
+    ship:crewComplement "3200"^^xsd:decimal ;
+    ship:maxSpeed "30.0"^^xsd:decimal ;
+    ship:propulsionType "Nuclear" .
+
+ship-entity:ship-CVN-71 a ship:Ship ;
+    ship:shipName "USS Theodore Roosevelt" ;
+    ship:hullSymbol "CVN-71" ;
+    ship:imoNumber "8700001" ;
+    ship:mmsi "369970000" ;
+    ship:pennantNumber "CVN-71" ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/nimitz> ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/USN> ;
+    ship:homeportedAt <https://example.org/ship-ontology/entity/homeport/naval-base-san-diego-ca> ;
+    ship:hasShipType <https://example.org/ship-ontology/entity/ship-type/aircraft-carrier> ;
+    ship:hasStatus <https://example.org/ship-ontology/entity/status/active> ;
+    ship:commissionDate "1986-10-25"^^xsd:date ;
+    ship:launchDate "1984-10-27"^^xsd:date ;
+    ship:length "332.8"^^xsd:decimal ;
+    ship:waterlineLength "317.0"^^xsd:decimal ;
+    ship:beam "76.8"^^xsd:decimal ;
+    ship:draft "11.3"^^xsd:decimal ;
+    ship:displacementFullLoad "104600"^^xsd:decimal ;
+    ship:crewComplement "3200"^^xsd:decimal ;
+    ship:maxSpeed "30.0"^^xsd:decimal ;
+    ship:propulsionType "Nuclear" .
+
+ship-entity:ship-DDG-51 a ship:Ship ;
+    ship:shipName "USS Arleigh Burke" ;
+    ship:hullSymbol "DDG-51" ;
+    ship:mmsi "369970051" ;
+    ship:pennantNumber "DDG-51" ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/arleigh-burke> ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/USN> ;
+    ship:homeportedAt <https://example.org/ship-ontology/entity/homeport/naval-station-norfolk-va> ;
+    ship:hasShipType <https://example.org/ship-ontology/entity/ship-type/guided-missile-destroyer> ;
+    ship:hasStatus <https://example.org/ship-ontology/entity/status/active> ;
+    ship:commissionDate "1991-07-04"^^xsd:date ;
+    ship:launchDate "1989-09-16"^^xsd:date ;
+    ship:length "153.9"^^xsd:decimal ;
+    ship:waterlineLength "142.0"^^xsd:decimal ;
+    ship:beam "20.4"^^xsd:decimal ;
+    ship:draft "9.3"^^xsd:decimal ;
+    ship:displacementFullLoad "9600"^^xsd:decimal ;
+    ship:crewComplement "380"^^xsd:decimal ;
+    ship:maxSpeed "30.0"^^xsd:decimal ;
+    ship:propulsionType "Gas Turbine" .
+
+ship-entity:ship-DDG-52 a ship:Ship ;
+    ship:shipName "USS Barry" ;
+    ship:hullSymbol "DDG-52" ;
+    ship:mmsi "369970052" ;
+    ship:pennantNumber "DDG-52" ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/arleigh-burke> ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/USN> ;
+    ship:homeportedAt <https://example.org/ship-ontology/entity/homeport/naval-station-norfolk-va> ;
+    ship:hasShipType <https://example.org/ship-ontology/entity/ship-type/guided-missile-destroyer> ;
+    ship:hasStatus <https://example.org/ship-ontology/entity/status/active> ;
+    ship:commissionDate "1992-12-12"^^xsd:date ;
+    ship:launchDate "1991-05-10"^^xsd:date ;
+    ship:length "153.9"^^xsd:decimal ;
+    ship:waterlineLength "142.0"^^xsd:decimal ;
+    ship:beam "20.4"^^xsd:decimal ;
+    ship:draft "9.3"^^xsd:decimal ;
+    ship:displacementFullLoad "9600"^^xsd:decimal ;
+    ship:crewComplement "380"^^xsd:decimal ;
+    ship:maxSpeed "30.0"^^xsd:decimal ;
+    ship:propulsionType "Gas Turbine" .
+
+ship-entity:ship-LHA-6 a ship:Ship ;
+    ship:shipName "USS America" ;
+    ship:hullSymbol "LHA-6" ;
+    ship:pennantNumber "LHA-6" ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/america> ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/USN> ;
+    ship:homeportedAt <https://example.org/ship-ontology/entity/homeport/naval-base-san-diego-ca> ;
+    ship:hasShipType <https://example.org/ship-ontology/entity/ship-type/amphibious-assault-ship> ;
+    ship:hasStatus <https://example.org/ship-ontology/entity/status/active> ;
+    ship:commissionDate "2014-10-11"^^xsd:date ;
+    ship:length "257.3"^^xsd:decimal ;
+    ship:beam "32.3"^^xsd:decimal ;
+    ship:draft "8.7"^^xsd:decimal ;
+    ship:displacementFullLoad "45000"^^xsd:decimal ;
+    ship:crewComplement "1200"^^xsd:decimal ;
+    ship:propulsionType "Gas Turbine" .
+
+ship-entity:ship-CG-47 a ship:Ship ;
+    ship:shipName "USS Ticonderoga" ;
+    ship:hullSymbol "CG-47" ;
+    ship:pennantNumber "CG-47" ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/ticonderoga> ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/USN> ;
+    ship:hasShipType <https://example.org/ship-ontology/entity/ship-type/guided-missile-cruiser> ;
+    ship:hasStatus <https://example.org/ship-ontology/entity/status/decommissioned> ;
+    ship:commissionDate "1983-01-22"^^xsd:date ;
+    ship:decommissionDate "2004-09-30"^^xsd:date ;
+    ship:length "172.8"^^xsd:decimal ;
+    ship:beam "16.8"^^xsd:decimal ;
+    ship:draft "9.5"^^xsd:decimal ;
+    ship:displacementFullLoad "9600"^^xsd:decimal ;
+    ship:crewComplement "387"^^xsd:decimal ;
+    ship:propulsionType "Gas Turbine" .
+
+ship-entity:ship-DD-963 a ship:Ship ;
+    ship:shipName "USS Spruance" ;
+    ship:hullSymbol "DD-963" ;
+    ship:pennantNumber "DD-963" ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/spruance> ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/USN> ;
+    ship:hasShipType <https://example.org/ship-ontology/entity/ship-type/destroyer> ;
+    ship:hasStatus <https://example.org/ship-ontology/entity/status/decommissioned> ;
+    ship:commissionDate "1975-09-20"^^xsd:date ;
+    ship:decommissionDate "2005-03-23"^^xsd:date ;
+    ship:length "171.6"^^xsd:decimal ;
+    ship:beam "16.8"^^xsd:decimal ;
+    ship:draft "8.8"^^xsd:decimal ;
+    ship:displacementFullLoad "8040"^^xsd:decimal ;
+    ship:crewComplement "296"^^xsd:decimal ;
+    ship:propulsionType "Gas Turbine" .
+
+ship-entity:ship-CV-41 a ship:Ship ;
+    ship:shipName "USS Midway" ;
+    ship:hullSymbol "CV-41" ;
+    ship:pennantNumber "CV-41" ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/midway> ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/USN> ;
+    ship:homeportedAt <https://example.org/ship-ontology/entity/homeport/san-diego-ca-museum> ;
+    ship:hasShipType <https://example.org/ship-ontology/entity/ship-type/aircraft-carrier> ;
+    ship:hasStatus <https://example.org/ship-ontology/entity/status/museum> ;
+    ship:commissionDate "1945-09-10"^^xsd:date ;
+    ship:decommissionDate "1992-04-11"^^xsd:date ;
+    ship:launchDate "1945-03-20"^^xsd:date ;
+    ship:length "295.0"^^xsd:decimal ;
+    ship:waterlineLength "274.0"^^xsd:decimal ;
+    ship:beam "34.4"^^xsd:decimal ;
+    ship:draft "10.5"^^xsd:decimal ;
+    ship:displacementFullLoad "60000"^^xsd:decimal ;
+    ship:crewComplement "4104"^^xsd:decimal ;
+    ship:maxSpeed "33.0"^^xsd:decimal ;
+    ship:propulsionType "Conventional" .
+
+ship-entity:ship-BB-61 a ship:Ship ;
+    ship:shipName "USS Iowa" ;
+    ship:hullSymbol "BB-61" ;
+    ship:pennantNumber "BB-61" ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/iowa> ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/USN> ;
+    ship:homeportedAt <https://example.org/ship-ontology/entity/homeport/los-angeles-ca-museum> ;
+    ship:hasShipType <https://example.org/ship-ontology/entity/ship-type/battleship> ;
+    ship:hasStatus <https://example.org/ship-ontology/entity/status/museum> ;
+    ship:commissionDate "1943-02-22"^^xsd:date ;
+    ship:decommissionDate "1990-10-26"^^xsd:date ;
+    ship:launchDate "1942-08-27"^^xsd:date ;
+    ship:length "270.4"^^xsd:decimal ;
+    ship:waterlineLength "262.0"^^xsd:decimal ;
+    ship:beam "33.0"^^xsd:decimal ;
+    ship:draft "11.0"^^xsd:decimal ;
+    ship:displacementFullLoad "57000"^^xsd:decimal ;
+    ship:crewComplement "2700"^^xsd:decimal ;
+    ship:maxSpeed "33.0"^^xsd:decimal ;
+    ship:propulsionType "Conventional" .
+
+ship-entity:ship-SSN-688 a ship:Ship ;
+    ship:shipName "USS Los Angeles" ;
+    ship:hullSymbol "SSN-688" ;
+    ship:pennantNumber "SSN-688" ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/los-angeles> ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/USN> ;
+    ship:hasShipType <https://example.org/ship-ontology/entity/ship-type/attack-submarine> ;
+    ship:hasStatus <https://example.org/ship-ontology/entity/status/decommissioned> ;
+    ship:commissionDate "1976-11-13"^^xsd:date ;
+    ship:decommissionDate "2010-01-23"^^xsd:date ;
+    ship:length "109.7"^^xsd:decimal ;
+    ship:beam "10.1"^^xsd:decimal ;
+    ship:draft "9.9"^^xsd:decimal ;
+    ship:displacementFullLoad "6900"^^xsd:decimal ;
+    ship:crewComplement "133"^^xsd:decimal ;
+    ship:propulsionType "Nuclear" .
+
+ship-entity:ship-RN-R09 a ship:Ship ;
+    ship:shipName "HMS Prince of Wales" ;
+    ship:hullSymbol "R09" ;
+    ship:imoNumber "4907372" ;
+    ship:mmsi "235110000" ;
+    ship:pennantNumber "R09" ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/queen-elizabeth> ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/RN> ;
+    ship:homeportedAt <https://example.org/ship-ontology/entity/homeport/portsmouth-uk> ;
+    ship:hasShipType <https://example.org/ship-ontology/entity/ship-type/aircraft-carrier> ;
+    ship:hasStatus <https://example.org/ship-ontology/entity/status/active> ;
+    ship:commissionDate "2019-12-10"^^xsd:date ;
+    ship:launchDate "2017-12-21"^^xsd:date ;
+    ship:length "280.0"^^xsd:decimal ;
+    ship:waterlineLength "265.0"^^xsd:decimal ;
+    ship:beam "73.0"^^xsd:decimal ;
+    ship:draft "11.0"^^xsd:decimal ;
+    ship:displacementFullLoad "72000"^^xsd:decimal ;
+    ship:crewComplement "1600"^^xsd:decimal ;
+    ship:maxSpeed "25.0"^^xsd:decimal ;
+    ship:propulsionType "Gas Turbine" .
+
+ship-entity:ship-RN-R08 a ship:Ship ;
+    ship:shipName "HMS Queen Elizabeth" ;
+    ship:hullSymbol "R08" ;
+    ship:imoNumber "4907360" ;
+    ship:mmsi "235109000" ;
+    ship:pennantNumber "R08" ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/queen-elizabeth> ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/RN> ;
+    ship:homeportedAt <https://example.org/ship-ontology/entity/homeport/portsmouth-uk> ;
+    ship:hasShipType <https://example.org/ship-ontology/entity/ship-type/aircraft-carrier> ;
+    ship:hasStatus <https://example.org/ship-ontology/entity/status/active> ;
+    ship:commissionDate "2017-12-07"^^xsd:date ;
+    ship:launchDate "2014-07-17"^^xsd:date ;
+    ship:length "280.0"^^xsd:decimal ;
+    ship:waterlineLength "265.0"^^xsd:decimal ;
+    ship:beam "73.0"^^xsd:decimal ;
+    ship:draft "11.0"^^xsd:decimal ;
+    ship:displacementFullLoad "72000"^^xsd:decimal ;
+    ship:crewComplement "1600"^^xsd:decimal ;
+    ship:maxSpeed "25.0"^^xsd:decimal ;
+    ship:propulsionType "Gas Turbine" .
+

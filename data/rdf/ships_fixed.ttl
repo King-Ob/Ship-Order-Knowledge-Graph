@@ -1,0 +1,151 @@
+@prefix ship: <https://example.org/ship-ontology/> .
+@prefix ship-entity: <https://example.org/ship-ontology/entity/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+
+<https://example.org/ship-ontology/entity/operator/united-states-navy> a ship:Operator ;
+    ship:operatorName "United States Navy" .
+
+<https://example.org/ship-ontology/entity/operator/royal-navy> a ship:Operator ;
+    ship:operatorName "Royal Navy" .
+
+<https://example.org/ship-ontology/entity/class/nimitz> a ship:ShipClass ;
+    ship:className "Nimitz" .
+
+<https://example.org/ship-ontology/entity/class/arleigh-burke> a ship:ShipClass ;
+    ship:className "Arleigh Burke" .
+
+<https://example.org/ship-ontology/entity/class/america> a ship:ShipClass ;
+    ship:className "America" .
+
+<https://example.org/ship-ontology/entity/class/ticonderoga> a ship:ShipClass ;
+    ship:className "Ticonderoga" .
+
+<https://example.org/ship-ontology/entity/class/spruance> a ship:ShipClass ;
+    ship:className "Spruance" .
+
+<https://example.org/ship-ontology/entity/class/midway> a ship:ShipClass ;
+    ship:className "Midway" .
+
+<https://example.org/ship-ontology/entity/class/iowa> a ship:ShipClass ;
+    ship:className "Iowa" .
+
+<https://example.org/ship-ontology/entity/class/los-angeles> a ship:ShipClass ;
+    ship:className "Los Angeles" .
+
+<https://example.org/ship-ontology/entity/class/queen-elizabeth> a ship:ShipClass ;
+    ship:className "Queen Elizabeth" .
+
+<https://example.org/ship-ontology/entity/homeport/naval-base-kitsap-bremerton-wa> a ship:Homeport ;
+    ship:homeportName "Naval Base Kitsap Bremerton WA" .
+
+<https://example.org/ship-ontology/entity/homeport/naval-base-san-diego-ca> a ship:Homeport ;
+    ship:homeportName "Naval Base San Diego CA" .
+
+<https://example.org/ship-ontology/entity/homeport/naval-station-norfolk-va> a ship:Homeport ;
+    ship:homeportName "Naval Station Norfolk VA" .
+
+<https://example.org/ship-ontology/entity/homeport/san-diego-ca-museum> a ship:Homeport ;
+    ship:homeportName "San Diego CA Museum" .
+
+<https://example.org/ship-ontology/entity/homeport/los-angeles-ca-museum> a ship:Homeport ;
+    ship:homeportName "Los Angeles CA Museum" .
+
+<https://example.org/ship-ontology/entity/homeport/portsmouth-uk> a ship:Homeport ;
+    ship:homeportName "Portsmouth UK" .
+
+ship-entity:ship-CVN-68 a ship:Ship ;
+    ship:shipName "USS Nimitz" ;
+    ship:status "Active" ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/united-states-navy> ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/nimitz> ;
+    ship:homeportedAt <https://example.org/ship-ontology/entity/homeport/naval-base-kitsap-bremerton-wa> ;
+    ship:hullSymbol "CVN-68" .
+
+ship-entity:ship-CVN-71 a ship:Ship ;
+    ship:shipName "USS Theodore Roosevelt" ;
+    ship:status "Active" ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/united-states-navy> ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/nimitz> ;
+    ship:homeportedAt <https://example.org/ship-ontology/entity/homeport/naval-base-san-diego-ca> ;
+    ship:hullSymbol "CVN-71" .
+
+ship-entity:ship-DDG-51 a ship:Ship ;
+    ship:shipName "USS Arleigh Burke" ;
+    ship:status "Active" ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/united-states-navy> ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/arleigh-burke> ;
+    ship:homeportedAt <https://example.org/ship-ontology/entity/homeport/naval-station-norfolk-va> ;
+    ship:hullSymbol "DDG-51" .
+
+ship-entity:ship-DDG-52 a ship:Ship ;
+    ship:shipName "USS Barry" ;
+    ship:status "Active" ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/united-states-navy> ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/arleigh-burke> ;
+    ship:homeportedAt <https://example.org/ship-ontology/entity/homeport/naval-station-norfolk-va> ;
+    ship:hullSymbol "DDG-52" .
+
+ship-entity:ship-LHA-6 a ship:Ship ;
+    ship:shipName "USS America" ;
+    ship:status "Active" ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/united-states-navy> ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/america> ;
+    ship:homeportedAt <https://example.org/ship-ontology/entity/homeport/naval-base-san-diego-ca> ;
+    ship:hullSymbol "LHA-6" .
+
+ship-entity:ship-CG-47 a ship:Ship ;
+    ship:shipName "USS Ticonderoga" ;
+    ship:status "Decommissioned" ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/united-states-navy> ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/ticonderoga> ;
+    ship:hullSymbol "CG-47" .
+
+ship-entity:ship-DD-963 a ship:Ship ;
+    ship:shipName "USS Spruance" ;
+    ship:status "Decommissioned" ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/united-states-navy> ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/spruance> ;
+    ship:hullSymbol "DD-963" .
+
+ship-entity:ship-CV-41 a ship:Ship ;
+    ship:shipName "USS Midway" ;
+    ship:status "Museum" ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/united-states-navy> ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/midway> ;
+    ship:homeportedAt <https://example.org/ship-ontology/entity/homeport/san-diego-ca-museum> ;
+    ship:hullSymbol "CV-41" .
+
+ship-entity:ship-BB-61 a ship:Ship ;
+    ship:shipName "USS Iowa" ;
+    ship:status "Museum" ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/united-states-navy> ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/iowa> ;
+    ship:homeportedAt <https://example.org/ship-ontology/entity/homeport/los-angeles-ca-museum> ;
+    ship:hullSymbol "BB-61" .
+
+ship-entity:ship-SSN-688 a ship:Ship ;
+    ship:shipName "USS Los Angeles" ;
+    ship:status "Decommissioned" ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/united-states-navy> ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/los-angeles> ;
+    ship:hullSymbol "SSN-688" .
+
+ship-entity:ship-RN-R09 a ship:Ship ;
+    ship:shipName "HMS Prince of Wales" ;
+    ship:status "Active" ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/royal-navy> ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/queen-elizabeth> ;
+    ship:homeportedAt <https://example.org/ship-ontology/entity/homeport/portsmouth-uk> ;
+    ship:hullSymbol "R09" .
+
+ship-entity:ship-RN-R08 a ship:Ship ;
+    ship:shipName "HMS Queen Elizabeth" ;
+    ship:status "Active" ;
+    ship:operatedBy <https://example.org/ship-ontology/entity/operator/royal-navy> ;
+    ship:hasClass <https://example.org/ship-ontology/entity/class/queen-elizabeth> ;
+    ship:homeportedAt <https://example.org/ship-ontology/entity/homeport/portsmouth-uk> ;
+    ship:hullSymbol "R08" .
+

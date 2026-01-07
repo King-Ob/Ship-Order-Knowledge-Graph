@@ -194,19 +194,19 @@ ship:ExtractionActivity rdfs:seeAlso <https://www.w3.org/TR/prov-o/#Activity> .
 # EXAMPLE DATA SOURCES
 # ============================================================================
 
-ship-entity:source/NVR a ship:DataSource ;
+<https://example.org/ship-ontology/entity/source/NVR> a ship:DataSource ;
     rdfs:label "Navy Vessel Register (NVR)"@en ;
     ship:sourceURL <https://www.navsea.navy.mil> ;
     ship:authorityLevel "authoritative" ;
     rdfs:comment "Authoritative source for US Navy vessel inventory and lifecycle data."@en .
 
-ship-entity:source/WDQS a ship:DataSource ;
+<https://example.org/ship-ontology/entity/source/WDQS> a ship:DataSource ;
     rdfs:label "Wikidata Query Service (WDQS)"@en ;
     ship:sourceURL <https://query.wikidata.org/sparql> ;
     ship:authorityLevel "verified" ;
     rdfs:comment "Public knowledge base export for international naval vessels."@en .
 
-ship-entity:source/CSV a ship:DataSource ;
+<https://example.org/ship-ontology/entity/source/CSV> a ship:DataSource ;
     rdfs:label "Messy CSV Data"@en ;
     ship:authorityLevel "unverified" ;
     rdfs:comment "Messy table/CSV with data quality issues."@en .
@@ -215,16 +215,16 @@ ship-entity:source/CSV a ship:DataSource ;
 # EXAMPLE EXTRACTION ACTIVITIES
 # ============================================================================
 
-ship-entity:activity/RML_NVR a ship:ExtractionActivity ;
+<https://example.org/ship-ontology/entity/activity/RML_NVR> a ship:ExtractionActivity ;
     rdfs:label "RML Mapping: NVR"@en ;
     ship:activityType "RML_Mapping" ;
     ship:activityConfig "mappings/nvr.rml.ttl" ;
-    prov:wasAssociatedWith ship-entity:source/NVR ;
+    prov:wasAssociatedWith <https://example.org/ship-ontology/entity/source/NVR> ;
     prov:startedAtTime "2024-01-15T10:30:00Z"^^xsd:dateTime .
 
-ship-entity:activity/RML_WDQS a ship:ExtractionActivity ;
+<https://example.org/ship-ontology/entity/activity/RML_WDQS> a ship:ExtractionActivity ;
     rdfs:label "RML Mapping: WDQS"@en ;
     ship:activityType "RML_Mapping" ;
     ship:activityConfig "mappings/wikidata_extract.rml.ttl" ;
-    prov:wasAssociatedWith ship-entity:source/WDQS ;
+    prov:wasAssociatedWith <https://example.org/ship-ontology/entity/source/WDQS> ;
     prov:startedAtTime "2024-01-14T08:15:00Z"^^xsd:dateTime .
